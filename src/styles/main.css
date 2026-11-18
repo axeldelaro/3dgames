@@ -1,0 +1,2477 @@
+/* ==========================================================================
+   3D GAMES : OMNIVERSE AAA — "CYBER-GLASS AAA" DESIGN SYSTEM & HUD STYLESHEET
+   Palette: Smoked Obsidian Glass • Luminous Ice-Cyan • Solar-Amber • Bio-Mint
+   Zero Purple / Zero Violet Accents • 4K Desktop to Android Landscape Ready
+   ========================================================================== */
+
+:root {
+  /* Core Surfaces */
+  --bg-void: #05080f;
+  --glass-obsidian: rgba(7, 13, 24, 0.72);
+  --glass-obsidian-strong: rgba(5, 10, 19, 0.88);
+  --glass-obsidian-soft: rgba(9, 17, 31, 0.56);
+  --glass-elevated: rgba(13, 24, 42, 0.78);
+  --glass-blur: blur(20px) saturate(165%);
+
+  /* Cyber-Glass Luminous Accents (Strictly Zero Purple/Violet) */
+  --cyan: #38e2ff;
+  --cyan-bright: #7ceeff;
+  --cyan-border: rgba(56, 226, 255, 0.28);
+  --cyan-border-strong: rgba(56, 226, 255, 0.62);
+  --cyan-glow: rgba(56, 226, 255, 0.22);
+  --cyan-subtle: rgba(56, 226, 255, 0.1);
+
+  --amber: #ffb347;
+  --amber-bright: #ffd166;
+  --amber-border: rgba(255, 179, 71, 0.42);
+  --amber-glow: rgba(255, 179, 71, 0.25);
+  --amber-subtle: rgba(255, 179, 71, 0.12);
+
+  --mint: #66f2a5;
+  --mint-glow: rgba(102, 242, 165, 0.24);
+  --teal: #19d4c6;
+  --danger: #ff5e57;
+  --danger-glow: rgba(255, 94, 87, 0.32);
+
+  /* Typography */
+  --text-primary: #eef6ff;
+  --text-secondary: rgba(206, 227, 248, 0.8);
+  --text-muted: rgba(142, 173, 206, 0.6);
+
+  --font-display: 'Orbitron', system-ui, sans-serif;
+  --font-tech: 'Rajdhani', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Motion & Geometry */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-snappy: cubic-bezier(0.22, 1, 0.36, 1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* Safe-Area Insets for Notched Mobile / Capacitor Android */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* ==========================================================================
+   1. COMPLETE CSS RESET & VIEWPORT LOCK
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#omniverse-app {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.4;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+#omniverse-app {
+  position: relative;
+  isolation: isolate;
+}
+
+#omniverse-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  touch-action: none;
+  outline: none;
+}
+
+#omniverse-ui {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 40;
+  pointer-events: none;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+}
+
+button {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+input[type='text'],
+input[type='search'],
+input[type='number'] {
+  user-select: text;
+  -webkit-user-select: text;
+  touch-action: manipulation;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.is-hidden {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+/* Custom Cyber Scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(5, 10, 19, 0.45);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(56, 226, 255, 0.34);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(56, 226, 255, 0.65);
+}
+
+/* ==========================================================================
+   2. CINEMATIC MAIN HUB (#omniverse-hub)
+   ========================================================================== */
+
+#omniverse-hub {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  padding: calc(16px + var(--safe-top)) calc(22px + var(--safe-right))
+    calc(16px + var(--safe-bottom)) calc(22px + var(--safe-left));
+  background:
+    radial-gradient(circle at 18% 12%, rgba(56, 226, 255, 0.11) 0%, transparent 46%),
+    radial-gradient(circle at 85% 88%, rgba(255, 179, 71, 0.08) 0%, transparent 44%),
+    linear-gradient(180deg, rgba(4, 9, 18, 0.78) 0%, rgba(5, 10, 19, 0.64) 50%, rgba(4, 8, 16, 0.86) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  touch-action: pan-y;
+  overscroll-behavior: contain;
+  transition:
+    opacity 0.32s var(--ease-out-expo),
+    transform 0.32s var(--ease-out-expo),
+    visibility 0.32s;
+}
+
+#omniverse-hub.is-hidden {
+  transform: scale(1.018);
+}
+
+/* Top Header */
+.omni-hub-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 12px 18px;
+  background: var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--cyan-border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 14px 38px rgba(0, 0, 0, 0.48),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.omni-brand-cluster {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.omni-brand-emblem {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 11px;
+  background: linear-gradient(135deg, rgba(56, 226, 255, 0.18), rgba(255, 179, 71, 0.12));
+  border: 1px solid var(--cyan-border-strong);
+  box-shadow: 0 0 22px var(--cyan-glow);
+}
+
+.omni-brand-emblem svg {
+  width: 28px;
+  height: 28px;
+}
+
+.omni-brand-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.omni-brand-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.omni-brand-title {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.55vw, 1.42rem);
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  color: var(--text-primary);
+  text-shadow: 0 0 18px rgba(56, 226, 255, 0.32);
+}
+
+.omni-brand-title span {
+  color: var(--cyan);
+}
+
+.omni-engine-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(56, 226, 255, 0.1);
+  border: 1px solid rgba(56, 226, 255, 0.35);
+  font-family: var(--font-tech);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyan-bright);
+}
+
+.omni-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mint);
+  box-shadow: 0 0 10px var(--mint);
+  animation: omniPulse 2.2s infinite ease-in-out;
+}
+
+.omni-brand-subtitle {
+  font-family: var(--font-tech);
+  font-size: 0.86rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+}
+
+.omni-header-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Prominent Android APK Action Button */
+.omni-apk-btn {
+  position: relative;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 179, 71, 0.24) 0%,
+    rgba(255, 209, 102, 0.14) 48%,
+    rgba(56, 226, 255, 0.2) 100%
+  );
+  border: 1px solid rgba(255, 193, 94, 0.68);
+  box-shadow:
+    0 6px 24px rgba(255, 179, 71, 0.22),
+    0 0 16px rgba(56, 226, 255, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  font-family: var(--font-tech);
+  font-size: 0.96rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff8eb;
+  transition:
+    transform 0.2s var(--ease-snappy),
+    box-shadow 0.2s var(--ease-snappy),
+    border-color 0.2s var(--ease-snappy);
+}
+
+.omni-apk-btn::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -35%;
+  width: 32%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.26),
+    transparent
+  );
+  transform: rotate(24deg);
+  animation: omniSheen 4.8s infinite ease-in-out;
+  pointer-events: none;
+}
+
+.omni-apk-btn:hover {
+  transform: translateY(-2px);
+  border-color: var(--amber-bright);
+  box-shadow:
+    0 10px 28px rgba(255, 179, 71, 0.36),
+    0 0 22px rgba(56, 226, 255, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.omni-apk-btn:active {
+  transform: translateY(0);
+}
+
+.omni-apk-btn svg {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  color: var(--amber-bright);
+}
+
+/* Optional PWA Install Button & Resume Button */
+.omni-pwa-btn,
+.omni-resume-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 15px;
+  border-radius: var(--radius-md);
+  background: rgba(56, 226, 255, 0.14);
+  border: 1px solid var(--cyan-border-strong);
+  box-shadow: 0 4px 18px var(--cyan-glow);
+  font-family: var(--font-tech);
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--cyan-bright);
+  transition:
+    transform 0.2s var(--ease-snappy),
+    background 0.2s,
+    box-shadow 0.2s;
+}
+
+.omni-pwa-btn:hover,
+.omni-resume-btn:hover {
+  transform: translateY(-1px);
+  background: rgba(56, 226, 255, 0.24);
+  box-shadow: 0 8px 24px rgba(56, 226, 255, 0.32);
+}
+
+.omni-resume-btn {
+  background: rgba(102, 242, 165, 0.15);
+  border-color: rgba(102, 242, 165, 0.52);
+  color: var(--mint);
+  box-shadow: 0 4px 18px var(--mint-glow);
+}
+
+.omni-resume-btn:hover {
+  background: rgba(102, 242, 165, 0.26);
+}
+
+/* Main 2-Column Hub Grid */
+.omni-hub-grid {
+  display: grid;
+  grid-template-columns: 336px minmax(0, 1fr);
+  gap: 16px;
+  flex: 1 1 auto;
+  min-height: 0;
+  align-items: stretch;
+}
+
+/* ==========================================================================
+   2B. WEBRTC P2P SERVERLESS LOBBY PANEL
+   ========================================================================== */
+
+.omni-lobby-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--cyan-border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 14px 36px rgba(0, 0, 0, 0.44),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  min-height: 0;
+}
+
+.omni-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(56, 226, 255, 0.14);
+}
+
+.omni-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyan-bright);
+}
+
+.omni-panel-title svg {
+  width: 16px;
+  height: 16px;
+  color: var(--cyan);
+}
+
+.omni-net-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  font-family: var(--font-tech);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+.omni-net-status-pill.is-online {
+  background: rgba(102, 242, 165, 0.12);
+  border-color: rgba(102, 242, 165, 0.45);
+  color: var(--mint);
+}
+
+.omni-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.omni-field-label {
+  font-family: var(--font-tech);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.omni-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(4, 9, 18, 0.76);
+  border: 1px solid rgba(56, 226, 255, 0.24);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+
+.omni-input:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(56, 226, 255, 0.18);
+}
+
+/* Avatar Accent Color Swatches (Zero Purple/Violet) */
+.omni-color-swatches {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.omni-color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--swatch-color, #38e2ff);
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  transition: transform 0.18s var(--ease-snappy), border-color 0.18s, box-shadow 0.18s;
+}
+
+.omni-color-swatch:hover {
+  transform: scale(1.14);
+}
+
+.omni-color-swatch.is-active {
+  transform: scale(1.18);
+  border-color: #ffffff;
+  box-shadow: 0 0 12px var(--swatch-color, #38e2ff);
+}
+
+/* 4-Char Room Code Row */
+.omni-room-row {
+  display: grid;
+  grid-template-columns: 108px 1fr;
+  gap: 8px;
+}
+
+.omni-room-code-input {
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 1.02rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--amber-bright);
+  background: rgba(4, 9, 18, 0.88);
+  border: 1px solid var(--amber-border);
+  border-radius: var(--radius-sm);
+  padding: 8px 6px;
+}
+
+.omni-room-code-input:focus {
+  border-color: var(--amber-bright);
+  box-shadow: 0 0 0 2px var(--amber-glow);
+}
+
+.omni-room-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.omni-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(56, 226, 255, 0.12);
+  border: 1px solid var(--cyan-border);
+  font-family: var(--font-tech);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  transition:
+    background 0.18s,
+    border-color 0.18s,
+    transform 0.18s var(--ease-snappy),
+    box-shadow 0.18s;
+  white-space: nowrap;
+}
+
+.omni-btn:hover {
+  background: rgba(56, 226, 255, 0.22);
+  border-color: var(--cyan);
+  box-shadow: 0 0 14px var(--cyan-glow);
+}
+
+.omni-btn:active {
+  transform: scale(0.97);
+}
+
+.omni-btn.is-amber {
+  background: var(--amber-subtle);
+  border-color: var(--amber-border);
+  color: var(--amber-bright);
+}
+
+.omni-btn.is-amber:hover {
+  background: rgba(255, 179, 71, 0.24);
+  border-color: var(--amber-bright);
+  box-shadow: 0 0 14px var(--amber-glow);
+}
+
+.omni-btn.is-danger {
+  background: rgba(255, 94, 87, 0.12);
+  border-color: rgba(255, 94, 87, 0.36);
+  color: #ff948f;
+}
+
+.omni-btn.is-danger:hover {
+  background: rgba(255, 94, 87, 0.22);
+  border-color: var(--danger);
+}
+
+.omni-room-actions .omni-btn {
+  flex: 1;
+}
+
+/* Direct Invite Copy Button */
+.omni-invite-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, rgba(56, 226, 255, 0.14), rgba(25, 212, 198, 0.14));
+  border: 1px solid rgba(56, 226, 255, 0.38);
+  font-family: var(--font-tech);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--cyan-bright);
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.2s var(--ease-snappy),
+    box-shadow 0.2s;
+}
+
+.omni-invite-btn:hover {
+  background: linear-gradient(90deg, rgba(56, 226, 255, 0.24), rgba(25, 212, 198, 0.24));
+  border-color: var(--cyan-bright);
+  box-shadow: 0 4px 18px var(--cyan-glow);
+}
+
+.omni-invite-btn.is-copied {
+  background: rgba(102, 242, 165, 0.22);
+  border-color: var(--mint);
+  color: var(--mint);
+  box-shadow: 0 0 18px var(--mint-glow);
+}
+
+.omni-invite-url-preview {
+  font-family: var(--font-tech);
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Connected Squad List */
+.omni-squad-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-height: 82px;
+}
+
+.omni-squad-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  max-height: 170px;
+  padding-right: 2px;
+}
+
+.omni-peer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(4, 10, 20, 0.66);
+  border: 1px solid rgba(56, 226, 255, 0.14);
+}
+
+.omni-peer-ident {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.omni-peer-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.omni-peer-name {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.omni-peer-badge {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(255, 179, 71, 0.16);
+  border: 1px solid rgba(255, 179, 71, 0.4);
+  font-family: var(--font-tech);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--amber-bright);
+}
+
+.omni-peer-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.omni-peer-world {
+  font-family: var(--font-tech);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.omni-peer-ping {
+  font-family: var(--font-tech);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: rgba(102, 242, 165, 0.12);
+  color: var(--mint);
+}
+
+.omni-peer-ping.is-mid {
+  background: rgba(56, 226, 255, 0.12);
+  color: var(--cyan);
+}
+
+.omni-peer-ping.is-high {
+  background: rgba(255, 179, 71, 0.14);
+  color: var(--amber);
+}
+
+/* ==========================================================================
+   2C. 6 OPEN-WORLD SHOWCASE CARDS (WORLD_CATALOG)
+   ========================================================================== */
+
+.omni-worlds-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  align-content: stretch;
+}
+
+.omni-world-card {
+  --world-accent: #38e2ff;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 15px 16px;
+  background:
+    radial-gradient(
+      circle at 92% 8%,
+      color-mix(in srgb, var(--world-accent) 16%, transparent) 0%,
+      transparent 52%
+    ),
+    var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(56, 226, 255, 0.22);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.42),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition:
+    transform 0.24s var(--ease-out-expo),
+    border-color 0.24s var(--ease-out-expo),
+    box-shadow 0.24s var(--ease-out-expo);
+  cursor: pointer;
+}
+
+.omni-world-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--world-accent), transparent 85%);
+  opacity: 0.85;
+}
+
+.omni-world-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--world-accent);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.56),
+    0 0 26px color-mix(in srgb, var(--world-accent) 26%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.omni-world-card-top {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.omni-world-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.omni-world-emblem {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--world-accent) 14%, rgba(6, 12, 24, 0.8));
+  border: 1px solid color-mix(in srgb, var(--world-accent) 48%, transparent);
+  color: var(--world-accent);
+  flex-shrink: 0;
+  box-shadow: 0 0 16px color-mix(in srgb, var(--world-accent) 20%, transparent);
+}
+
+.omni-world-emblem svg {
+  width: 23px;
+  height: 23px;
+}
+
+.omni-world-genre {
+  font-family: var(--font-tech);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--world-accent) 12%, rgba(5, 10, 20, 0.7));
+  border: 1px solid color-mix(in srgb, var(--world-accent) 36%, transparent);
+  color: var(--world-accent);
+  text-align: right;
+}
+
+.omni-world-title {
+  font-family: var(--font-display);
+  font-size: 0.98rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.omni-world-subtitle {
+  font-family: var(--font-tech);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--world-accent);
+  margin-top: -4px;
+}
+
+.omni-world-desc {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  line-height: 1.44;
+  color: var(--text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.omni-world-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.omni-feature-chip {
+  font-family: var(--font-tech);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary);
+}
+
+.omni-world-launch-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 13px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--world-accent) 14%, rgba(7, 14, 26, 0.85));
+  border: 1px solid color-mix(in srgb, var(--world-accent) 45%, transparent);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  color: var(--text-primary);
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    box-shadow 0.2s,
+    transform 0.2s var(--ease-snappy);
+}
+
+.omni-world-card:hover .omni-world-launch-btn {
+  background: color-mix(in srgb, var(--world-accent) 26%, rgba(7, 14, 26, 0.92));
+  border-color: var(--world-accent);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--world-accent) 30%, transparent);
+}
+
+/* ==========================================================================
+   2D. GRAPHICS & AUDIO SETTINGS BAR
+   ========================================================================== */
+
+.omni-settings-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding: 10px 18px;
+  background: var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--cyan-border);
+  border-radius: var(--radius-lg);
+  flex-shrink: 0;
+}
+
+.omni-settings-cluster {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.omni-setting-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.omni-setting-label {
+  font-family: var(--font-tech);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.omni-segmented {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  background: rgba(4, 8, 16, 0.82);
+  border: 1px solid rgba(56, 226, 255, 0.22);
+}
+
+.omni-seg-btn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-family: var(--font-tech);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+}
+
+.omni-seg-btn:hover {
+  color: var(--text-primary);
+}
+
+.omni-seg-btn.is-active {
+  background: rgba(56, 226, 255, 0.22);
+  color: var(--cyan-bright);
+  box-shadow: 0 0 12px rgba(56, 226, 255, 0.2);
+}
+
+/* Cyber Toggle Switch */
+.omni-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(4, 8, 16, 0.75);
+  border: 1px solid rgba(56, 226, 255, 0.22);
+  font-family: var(--font-tech);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+}
+
+.omni-toggle-track {
+  width: 28px;
+  height: 15px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.14);
+  position: relative;
+  transition: background 0.2s;
+}
+
+.omni-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+  transition: transform 0.2s var(--ease-snappy), background 0.2s;
+}
+
+.omni-toggle-btn.is-active {
+  border-color: rgba(102, 242, 165, 0.45);
+  color: var(--mint);
+}
+
+.omni-toggle-btn.is-active .omni-toggle-track {
+  background: rgba(102, 242, 165, 0.28);
+}
+
+.omni-toggle-btn.is-active .omni-toggle-thumb {
+  transform: translateX(13px);
+  background: var(--mint);
+}
+
+/* Volume Sliders */
+.omni-slider-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.omni-slider-wrap svg {
+  width: 15px;
+  height: 15px;
+  color: var(--cyan);
+  flex-shrink: 0;
+}
+
+.omni-range {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 82px;
+  height: 4px;
+  border-radius: var(--radius-pill);
+  background: rgba(56, 226, 255, 0.24);
+  cursor: pointer;
+}
+
+.omni-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--cyan);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 8px var(--cyan);
+}
+
+.omni-range::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--cyan);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 8px var(--cyan);
+}
+
+.omni-slider-val {
+  font-family: var(--font-tech);
+  font-size: 0.78rem;
+  font-weight: 700;
+  width: 32px;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   3. CONTROLS CHEAT-SHEET MODAL (#omniverse-controls-modal)
+   ========================================================================== */
+
+#omniverse-controls-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(3, 7, 14, 0.76);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: opacity 0.22s var(--ease-out-expo), visibility 0.22s;
+}
+
+.omni-modal-card {
+  width: min(880px, 96vw);
+  max-height: 88dvh;
+  overflow-y: auto;
+  padding: 22px;
+  border-radius: var(--radius-lg);
+  background: var(--glass-obsidian-strong);
+  border: 1px solid var(--cyan-border-strong);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.68), 0 0 32px var(--cyan-glow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.omni-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(56, 226, 255, 0.18);
+}
+
+.omni-modal-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--cyan-bright);
+}
+
+.omni-controls-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.omni-controls-col {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: rgba(8, 16, 30, 0.72);
+  border: 1px solid rgba(56, 226, 255, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.omni-controls-col h4 {
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  letter-spacing: 0.07em;
+  color: var(--amber-bright);
+  margin-bottom: 4px;
+}
+
+.omni-bind-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.omni-kbd {
+  font-family: var(--font-tech);
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 5px;
+  background: rgba(56, 226, 255, 0.12);
+  border: 1px solid rgba(56, 226, 255, 0.34);
+  color: var(--cyan-bright);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   4. NON-INTRUSIVE DYNAMIC IN-GAME HUD (#omniverse-hud)
+   ========================================================================== */
+
+#omniverse-hud {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+  transition: opacity 0.26s var(--ease-out-expo), visibility 0.26s;
+}
+
+/* Top-Left: Tilted 3D Radar Minimap + Vitals + Credits */
+.omni-hud-topleft {
+  position: absolute;
+  top: calc(14px + var(--safe-top));
+  left: calc(16px + var(--safe-left));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  z-index: 5;
+}
+
+.omni-radar-shell {
+  position: relative;
+  width: 178px;
+  height: 178px;
+  display: grid;
+  place-items: center;
+}
+
+.omni-radar-bezel {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  padding: 5px;
+  background: var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1.5px solid var(--cyan-border-strong);
+  box-shadow:
+    0 16px 34px rgba(0, 0, 0, 0.58),
+    0 0 22px rgba(56, 226, 255, 0.18),
+    inset 0 2px 10px rgba(56, 226, 255, 0.18);
+  transform: perspective(420px) rotateX(28deg);
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+.omni-radar-bezel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 38%,
+    rgba(0, 0, 0, 0.28) 100%
+  );
+  pointer-events: none;
+}
+
+#omniverse-radar-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border-radius: 50%;
+}
+
+.omni-radar-cardinal {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  pointer-events: none;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
+}
+
+.omni-radar-cardinal.is-n {
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--amber-bright);
+}
+
+.omni-radar-cardinal.is-e {
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--cyan-bright);
+}
+
+.omni-radar-cardinal.is-s {
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--text-secondary);
+}
+
+.omni-radar-cardinal.is-w {
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--cyan-bright);
+}
+
+.omni-radar-coords {
+  margin-top: -10px;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-obsidian);
+  border: 1px solid var(--cyan-border);
+  font-family: var(--font-tech);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+/* Health, Stamina & Credits */
+.omni-vitals-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 178px;
+}
+
+.omni-vital-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid rgba(56, 226, 255, 0.2);
+}
+
+.omni-vital-label {
+  font-family: var(--font-tech);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  width: 26px;
+  color: var(--text-secondary);
+}
+
+.omni-vital-track {
+  flex: 1;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+}
+
+.omni-vital-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: var(--radius-pill);
+  transform-origin: left center;
+  transition: width 0.15s linear, background-color 0.2s;
+}
+
+.omni-vital-fill.is-health {
+  background: linear-gradient(90deg, #ff5e57, #ff8f6b);
+  box-shadow: 0 0 10px rgba(255, 94, 87, 0.5);
+}
+
+.omni-vital-fill.is-health.is-critical {
+  animation: omniAlertBlink 0.65s infinite alternate;
+}
+
+.omni-vital-fill.is-stamina {
+  background: linear-gradient(90deg, var(--teal), var(--mint));
+  box-shadow: 0 0 10px var(--mint-glow);
+}
+
+.omni-vital-fill.is-stamina.is-low {
+  background: var(--amber);
+}
+
+.omni-credits-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--amber-border);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--amber-bright);
+}
+
+/* Top-Center: World Context Banner + Contextual Toolbar */
+.omni-hud-topcenter {
+  position: absolute;
+  top: calc(12px + var(--safe-top));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  max-width: min(760px, calc(100vw - 420px));
+  z-index: 6;
+}
+
+.omni-world-status-pill {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--cyan-border);
+  font-family: var(--font-tech);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+}
+
+.omni-context-tag {
+  padding: 1px 7px;
+  border-radius: var(--radius-pill);
+  background: rgba(56, 226, 255, 0.15);
+  color: var(--cyan-bright);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+}
+
+.omni-weather-tag {
+  color: var(--amber-bright);
+  font-size: 0.76rem;
+}
+
+.omni-status-hint {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* Dynamic World Contextual Toolbar (#omniverse-world-toolbar) */
+#omniverse-world-toolbar {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-md);
+  background: var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--cyan-border);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+}
+
+#omniverse-world-toolbar:empty,
+#omniverse-world-toolbar.is-empty {
+  display: none;
+}
+
+/* Universal styling for elements injected into #omniverse-world-toolbar by all 6 worlds */
+#omniverse-world-toolbar button,
+#omniverse-world-toolbar .toolbar-btn,
+#omniverse-world-toolbar .omni-tb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  background: rgba(56, 226, 255, 0.11);
+  border: 1px solid rgba(56, 226, 255, 0.28);
+  font-family: var(--font-tech);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  transition: background 0.16s, border-color 0.16s, transform 0.14s;
+  white-space: nowrap;
+}
+
+#omniverse-world-toolbar button:hover,
+#omniverse-world-toolbar button.active,
+#omniverse-world-toolbar button.is-active {
+  background: rgba(56, 226, 255, 0.25);
+  border-color: var(--cyan);
+  color: var(--cyan-bright);
+}
+
+#omniverse-world-toolbar input[type='text'],
+#omniverse-world-toolbar input[type='search'],
+#omniverse-world-toolbar select {
+  padding: 5px 9px;
+  border-radius: 7px;
+  background: rgba(4, 9, 18, 0.85);
+  border: 1px solid rgba(56, 226, 255, 0.28);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  color: var(--text-primary);
+  min-width: 120px;
+}
+
+#omniverse-world-toolbar select option {
+  background: #070d18;
+  color: var(--text-primary);
+}
+
+#omniverse-world-toolbar span,
+#omniverse-world-toolbar label {
+  font-family: var(--font-tech);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+/* Top-Right: Telemetry Pill + Invite Pill + Hub Button */
+.omni-hud-topright {
+  position: absolute;
+  top: calc(12px + var(--safe-top));
+  right: calc(16px + var(--safe-right));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  z-index: 6;
+}
+
+.omni-topright-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.omni-telemetry-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--cyan-border);
+  font-family: var(--font-tech);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.omni-tel-fps {
+  color: var(--mint);
+  font-weight: 700;
+}
+
+.omni-tel-fps.is-warn {
+  color: var(--amber);
+}
+
+.omni-tel-sep {
+  opacity: 0.35;
+}
+
+.omni-hud-action-btn {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--cyan-border-strong);
+  font-family: var(--font-tech);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--cyan-bright);
+  transition: background 0.18s, transform 0.16s, border-color 0.18s;
+}
+
+.omni-hud-action-btn:hover {
+  background: rgba(56, 226, 255, 0.22);
+  border-color: var(--cyan-bright);
+  transform: translateY(-1px);
+}
+
+.omni-hud-action-btn.is-amber {
+  border-color: var(--amber-border);
+  color: var(--amber-bright);
+}
+
+.omni-hud-action-btn.is-amber:hover {
+  background: rgba(255, 179, 71, 0.2);
+}
+
+/* ==========================================================================
+   4B. BOTTOM-RIGHT VECTORIAL SPEEDOMETER / FLIGHT / NAVAL GAUGE
+   ========================================================================== */
+
+#omniverse-speed-gauge {
+  position: absolute;
+  right: calc(22px + var(--safe-right));
+  bottom: calc(20px + var(--safe-bottom));
+  width: 196px;
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--glass-obsidian);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--cyan-border);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.52);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transition:
+    opacity 0.26s var(--ease-out-expo),
+    transform 0.26s var(--ease-out-expo),
+    visibility 0.26s;
+}
+
+#omniverse-speed-gauge.is-hidden {
+  transform: translateY(16px) scale(0.95);
+}
+
+.omni-gauge-svg-wrap {
+  position: relative;
+  width: 156px;
+  height: 112px;
+}
+
+.omni-gauge-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.omni-gauge-center-readout {
+  position: absolute;
+  inset: 18px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.omni-speed-value {
+  font-family: var(--font-display);
+  font-size: 1.72rem;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  color: var(--text-primary);
+  text-shadow: 0 0 14px rgba(56, 226, 255, 0.35);
+}
+
+.omni-speed-unit {
+  font-family: var(--font-tech);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--cyan);
+}
+
+.omni-gear-badge {
+  margin-top: 3px;
+  padding: 1px 8px;
+  border-radius: 4px;
+  background: rgba(255, 179, 71, 0.16);
+  border: 1px solid var(--amber-border);
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--amber-bright);
+}
+
+.omni-gauge-submetrics {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(56, 226, 255, 0.14);
+  font-family: var(--font-tech);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.omni-wind-rose {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--teal);
+}
+
+.omni-wind-rose svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.12s linear;
+}
+
+/* Shift speedometer gracefully on touch devices so Right Joystick / Touch Buttons have full room */
+@media (pointer: coarse) {
+  #omniverse-speed-gauge {
+    right: calc(205px + var(--safe-right));
+    bottom: calc(14px + var(--safe-bottom));
+    transform-origin: bottom right;
+  }
+}
+
+/* ==========================================================================
+   4C. HOLOGRAPHIC FIGHTER JET PITCH-LADDER HUD & CROSSHAIR
+   ========================================================================== */
+
+#omniverse-crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0.75;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+#omniverse-fighter-hud {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(460px, 76vw);
+  height: min(360px, 64dvh);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  transition: opacity 0.22s;
+}
+
+#omniverse-fighter-hud svg {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  filter: drop-shadow(0 0 6px rgba(56, 226, 255, 0.45));
+}
+
+.omni-fighter-stall {
+  position: absolute;
+  bottom: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 16px;
+  border-radius: 6px;
+  background: rgba(255, 94, 87, 0.22);
+  border: 1.5px solid var(--danger);
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 900;
+  letter-spacing: 0.16em;
+  color: #ff7670;
+  box-shadow: 0 0 20px var(--danger-glow);
+  animation: omniAlertBlink 0.36s infinite alternate;
+}
+
+/* ==========================================================================
+   4D. SLOW-MOTION RADIAL WHEEL (#omniverse-radial-wheel)
+   ========================================================================== */
+
+#omniverse-radial-wheel {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  pointer-events: auto;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle, rgba(5, 11, 22, 0.45) 0%, rgba(3, 7, 14, 0.72) 100%);
+  backdrop-filter: blur(8px) saturate(140%);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  touch-action: none;
+  transition: opacity 0.18s var(--ease-out-expo), visibility 0.18s;
+}
+
+.omni-radial-container {
+  position: relative;
+  width: 340px;
+  height: 340px;
+  display: grid;
+  place-items: center;
+  transition: transform 0.22s var(--ease-out-expo);
+}
+
+#omniverse-radial-wheel.is-hidden .omni-radial-container {
+  transform: scale(0.88);
+}
+
+.omni-radial-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.omni-radial-slice {
+  fill: rgba(8, 16, 30, 0.82);
+  stroke: rgba(56, 226, 255, 0.28);
+  stroke-width: 1.4;
+  cursor: pointer;
+  transition: fill 0.14s, stroke 0.14s;
+}
+
+.omni-radial-slice.is-hovered {
+  fill: rgba(56, 226, 255, 0.26);
+  stroke: var(--amber-bright);
+  stroke-width: 2.2;
+}
+
+.omni-radial-item-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  pointer-events: none;
+  text-align: center;
+  width: 84px;
+}
+
+.omni-radial-item-icon {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--cyan-bright);
+  font-size: 1.15rem;
+}
+
+.omni-radial-item-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.omni-radial-item-label.is-hovered .omni-radial-item-icon {
+  color: var(--amber-bright);
+  transform: scale(1.14);
+}
+
+.omni-radial-item-text {
+  font-family: var(--font-tech);
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--text-primary);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+}
+
+.omni-radial-center {
+  position: absolute;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background: var(--glass-obsidian-strong);
+  border: 1.5px solid var(--cyan-border-strong);
+  box-shadow: 0 0 24px var(--cyan-glow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.omni-radial-center-cat {
+  font-family: var(--font-tech);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amber-bright);
+}
+
+.omni-radial-center-name {
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   5. TOAST NOTIFICATIONS & LOADING CURTAIN
+   ========================================================================== */
+
+#omniverse-toast-stack {
+  position: fixed;
+  top: calc(86px + var(--safe-top));
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 115;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  width: min(420px, 90vw);
+}
+
+.omni-toast {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--glass-obsidian-strong);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--cyan-border);
+  border-left: 3px solid var(--cyan);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.54);
+  animation: omniToastIn 0.28s var(--ease-out-expo) forwards;
+}
+
+.omni-toast.is-success {
+  border-left-color: var(--mint);
+}
+
+.omni-toast.is-warning {
+  border-left-color: var(--amber);
+}
+
+.omni-toast.is-leaving {
+  animation: omniToastOut 0.24s ease-in forwards;
+}
+
+.omni-toast-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--cyan);
+}
+
+.omni-toast.is-success .omni-toast-icon {
+  color: var(--mint);
+}
+
+.omni-toast.is-warning .omni-toast-icon {
+  color: var(--amber);
+}
+
+.omni-toast-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.omni-toast-title {
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.omni-toast-msg {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* Loading Curtain (#omniverse-loader) */
+#omniverse-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(56, 226, 255, 0.12) 0%, transparent 52%),
+    #040811;
+  transition: opacity 0.36s var(--ease-out-expo), visibility 0.36s;
+}
+
+.omni-loader-orbital {
+  position: relative;
+  width: 108px;
+  height: 108px;
+  display: grid;
+  place-items: center;
+}
+
+.omni-loader-orbital svg {
+  width: 100%;
+  height: 100%;
+}
+
+.omni-loader-spin-outer {
+  transform-origin: 50% 50%;
+  animation: omniRotateCW 2.4s linear infinite;
+}
+
+.omni-loader-spin-inner {
+  transform-origin: 50% 50%;
+  animation: omniRotateCCW 1.7s linear infinite;
+}
+
+.omni-loader-pct {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: var(--cyan-bright);
+}
+
+.omni-loader-title {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--text-primary);
+}
+
+.omni-loader-status {
+  font-family: var(--font-tech);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--cyan);
+  text-align: center;
+  max-width: 460px;
+}
+
+/* ==========================================================================
+   6. HARMONIOUS TOUCH OVERLAY INTEGRATION (InputManager Joysticks & Buttons)
+   ========================================================================== */
+
+#omniverse-touch-controls,
+.omni-touch-overlay,
+.touch-overlay,
+.touch-controls {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+
+/* Hide touch controls cleanly whenever Hub, Modal, or Loader is active */
+body.omni-hub-open #omniverse-touch-controls,
+body.omni-hub-open .omni-touch-overlay,
+body.omni-hub-open .touch-overlay,
+body.omni-hub-open .touch-controls {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.touch-joystick,
+.touch-joystick-base,
+.joystick-base {
+  border-radius: 50%;
+  background: rgba(7, 13, 24, 0.52);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(56, 226, 255, 0.34);
+  box-shadow: 0 0 20px rgba(56, 226, 255, 0.14);
+  touch-action: none;
+}
+
+.touch-joystick-knob,
+.touch-joystick-stick,
+.joystick-knob,
+.joystick-stick {
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(124, 238, 255, 0.9), rgba(56, 226, 255, 0.45));
+  border: 1.5px solid #ffffff;
+  box-shadow: 0 0 14px rgba(56, 226, 255, 0.55);
+  touch-action: none;
+}
+
+.touch-btn,
+.touch-action-btn {
+  pointer-events: auto;
+  touch-action: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(7, 13, 24, 0.68);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(56, 226, 255, 0.38);
+  color: var(--cyan-bright);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  transition: transform 0.1s, background 0.12s, border-color 0.12s;
+}
+
+.touch-btn:active,
+.touch-action-btn:active,
+.touch-btn.is-pressed,
+.touch-action-btn.is-pressed {
+  transform: scale(0.92);
+  background: rgba(56, 226, 255, 0.28);
+  border-color: var(--amber-bright);
+  color: var(--amber-bright);
+}
+
+/* ==========================================================================
+   7. KEYFRAME ANIMATIONS
+   ========================================================================== */
+
+@keyframes omniPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.84);
+  }
+}
+
+@keyframes omniSheen {
+  0%,
+  72%,
+  100% {
+    left: -40%;
+  }
+  36% {
+    left: 130%;
+  }
+}
+
+@keyframes omniAlertBlink {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0.35;
+  }
+}
+
+@keyframes omniRotateCW {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes omniRotateCCW {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes omniToastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes omniToastOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.96);
+  }
+}
+
+/* ==========================================================================
+   8. RESPONSIVE BREAKPOINTS (4K UHD • LAPTOP • TABLET • ANDROID LANDSCAPE)
+   ========================================================================== */
+
+/* 4K Ultra-HD Desktop Scaling */
+@media (min-width: 2200px) {
+  html {
+    font-size: 16.5px;
+  }
+  .omni-hub-grid {
+    grid-template-columns: 410px minmax(0, 1fr);
+    gap: 22px;
+  }
+  .omni-radar-shell {
+    width: 216px;
+    height: 216px;
+  }
+  .omni-vitals-stack {
+    width: 216px;
+  }
+}
+
+/* Medium Laptop / Tablet Landscape */
+@media (max-width: 1240px) {
+  .omni-worlds-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .omni-hub-grid {
+    grid-template-columns: 306px minmax(0, 1fr);
+  }
+}
+
+/* Tablet / Narrow Screens */
+@media (max-width: 920px) {
+  .omni-hub-grid {
+    grid-template-columns: 1fr;
+  }
+  .omni-controls-columns {
+    grid-template-columns: 1fr;
+  }
+  .omni-hud-topcenter {
+    max-width: calc(100vw - 320px);
+  }
+}
+
+/* Smartphone Portrait */
+@media (max-width: 640px) {
+  #omniverse-hub {
+    padding: calc(10px + var(--safe-top)) calc(12px + var(--safe-right))
+      calc(14px + var(--safe-bottom)) calc(12px + var(--safe-left));
+  }
+  .omni-worlds-grid {
+    grid-template-columns: 1fr;
+  }
+  .omni-apk-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  .omni-radar-shell {
+    width: 128px;
+    height: 128px;
+  }
+  .omni-vitals-stack {
+    width: 128px;
+  }
+  .omni-hud-topcenter {
+    top: calc(56px + var(--safe-top));
+    max-width: 92vw;
+  }
+  .omni-telemetry-pill .omni-tel-extra {
+    display: none;
+  }
+  #omniverse-speed-gauge {
+    right: calc(12px + var(--safe-right));
+    bottom: calc(170px + var(--safe-bottom));
+    width: 154px;
+    padding: 8px 10px;
+  }
+}
+
+/* Android Smartphone Landscape (max-height: 520px) — Zero Clipping / Zero Overflow */
+@media (max-height: 520px) {
+  #omniverse-hub {
+    padding: calc(8px + var(--safe-top)) calc(12px + var(--safe-right))
+      calc(10px + var(--safe-bottom)) calc(12px + var(--safe-left));
+    gap: 10px;
+    justify-content: flex-start;
+  }
+
+  .omni-hub-header {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .omni-brand-emblem {
+    width: 34px;
+    height: 34px;
+  }
+
+  .omni-brand-subtitle {
+    display: none;
+  }
+
+  .omni-apk-btn {
+    padding: 7px 12px;
+    font-size: 0.82rem;
+  }
+
+  .omni-hub-grid {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .omni-worlds-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .omni-world-card {
+    padding: 11px 12px;
+    gap: 7px;
+  }
+
+  .omni-world-desc {
+    -webkit-line-clamp: 2;
+    font-size: 0.74rem;
+  }
+
+  .omni-settings-bar {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+
+  /* Compact In-Game HUD for Mobile Landscape so Touch Joysticks Have Maximum Space */
+  .omni-hud-topleft {
+    top: calc(6px + var(--safe-top));
+    left: calc(10px + var(--safe-left));
+    gap: 5px;
+  }
+
+  .omni-radar-shell {
+    width: 114px;
+    height: 114px;
+  }
+
+  .omni-radar-coords {
+    font-size: 0.65rem;
+    padding: 1px 7px;
+  }
+
+  .omni-vitals-stack {
+    width: 118px;
+    gap: 4px;
+  }
+
+  .omni-vital-bar-row {
+    padding: 2px 6px;
+  }
+
+  .omni-credits-row {
+    padding: 3px 8px;
+    font-size: 0.72rem;
+  }
+
+  .omni-hud-topcenter {
+    top: calc(6px + var(--safe-top));
+    gap: 4px;
+    max-width: calc(100vw - 340px);
+  }
+
+  .omni-world-status-pill {
+    padding: 3px 10px;
+    font-size: 0.72rem;
+  }
+
+  #omniverse-world-toolbar {
+    padding: 4px 7px;
+    gap: 4px;
+  }
+
+  #omniverse-world-toolbar button {
+    padding: 3px 8px;
+    font-size: 0.72rem;
+  }
+
+  .omni-hud-topright {
+    top: calc(6px + var(--safe-top));
+    right: calc(10px + var(--safe-right));
+    gap: 4px;
+  }
+
+  .omni-telemetry-pill {
+    padding: 3px 9px;
+    font-size: 0.7rem;
+  }
+
+  .omni-hud-action-btn {
+    padding: 4px 9px;
+    font-size: 0.74rem;
+  }
+
+  #omniverse-speed-gauge {
+    right: calc(192px + var(--safe-right));
+    bottom: calc(8px + var(--safe-bottom));
+    width: 146px;
+    padding: 7px 9px;
+    gap: 3px;
+  }
+
+  .omni-gauge-svg-wrap {
+    width: 118px;
+    height: 82px;
+  }
+
+  .omni-speed-value {
+    font-size: 1.26rem;
+  }
+
+  .omni-radial-container {
+    width: 256px;
+    height: 256px;
+  }
+
+  .omni-radial-center {
+    width: 88px;
+    height: 88px;
+  }
+
+  #omniverse-toast-stack {
+    top: calc(54px + var(--safe-top));
+  }
+}

@@ -1,0 +1,164 @@
+name: Deploy GitHub Pages & Build Android APK
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "omniverse-ci-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  deploy-pages:
+    name: Deploy Web to GitHub Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate PWA & App Icons
+        run: npm run icons
+
+      - name: Build production WebGL2/PBR bundle
+        run: npm run build
+
+      - name: Add .nojekyll for GitHub Pages
+        run: touch dist/.nojekyll
+
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  build-android-apk:
+    name: Build & Sign Native Android APK (3dgames.apk)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Setup JDK 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install dependencies & build web bundle
+        run: |
+          npm ci
+          npm run icons
+          npm run build
+
+      - name: Initialize & Sync Capacitor Android Platform
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+          npx cap sync android
+          node scripts/configure-android.mjs
+          # Install generated Omniverse launcher icon across mipmap densities
+          for dir in android/app/src/main/res/mipmap-*; do
+            if [ -f "$dir/ic_launcher.png" ]; then
+              cp public/icons/icon-512.png "$dir/ic_launcher.png"
+            fi
+            if [ -f "$dir/ic_launcher_round.png" ]; then
+              cp public/icons/icon-512.png "$dir/ic_launcher_round.png"
+            fi
+            if [ -f "$dir/ic_launcher_foreground.png" ]; then
+              cp public/icons/icon-512.png "$dir/ic_launcher_foreground.png"
+            fi
+          done
+
+      - name: Generate Release Signing Keystore
+        run: |
+          keytool -genkeypair -v \
+            -keystore omniverse-release.keystore \
+            -alias omniverse \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -storepass omniverse3d \
+            -keypass omniverse3d \
+            -dname "CN=AxelDelaro, OU=OmniverseStudio, O=3DGames, L=Paris, S=IDF, C=FR"
+
+      - name: Build Release APK with Gradle & Sign as 3dgames.apk
+        run: |
+          chmod +x android/gradlew
+          (cd android && ./gradlew assembleRelease --no-daemon)
+
+          BUILD_TOOLS_DIR="$ANDROID_HOME/build-tools/$(ls -1 "$ANDROID_HOME/build-tools" | sort -V | tail -n 1)"
+          RAW_APK=$(find android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          echo "Found Gradle output APK: $RAW_APK"
+
+          "$BUILD_TOOLS_DIR/zipalign" -v -p 4 "$RAW_APK" aligned-3dgames.apk
+          "$BUILD_TOOLS_DIR/apksigner" sign \
+            --ks omniverse-release.keystore \
+            --ks-key-alias omniverse \
+            --ks-pass pass:omniverse3d \
+            --key-pass pass:omniverse3d \
+            --out 3dgames.apk \
+            aligned-3dgames.apk
+
+          "$BUILD_TOOLS_DIR/apksigner" verify --verbose 3dgames.apk
+          ls -lh 3dgames.apk
+
+      - name: Upload 3dgames.apk to GitHub Actions Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: 3dgames-apk
+          path: 3dgames.apk
+          if-no-files-found: error
+
+      - name: Publish 3dgames.apk to GitHub Releases (Latest)
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: "3D GAMES : OMNIVERSE AAA — v1.0.${{ github.run_number }}"
+          body: |
+            ## 🌌 3D GAMES : OMNIVERSE AAA — Build #${{ github.run_number }}
+            - 🌐 **Jouer immédiatement sur le Web (GitHub Pages) :** https://axeldelaro.github.io/3dgames/
+            - 📱 **Téléchargement direct APK Android natif signé :** `3dgames.apk` ci-dessous (Paysage immersif, WebGL2/PBR, Manette Bluetooth & HUD Tactile AAA, Multijoueur P2P WebRTC).
+          files: 3dgames.apk
+          draft: false
+          prerelease: false
+          make_latest: true

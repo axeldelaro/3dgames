@@ -1,0 +1,32 @@
+{
+  "name": "3D GAMES : OMNIVERSE AAA",
+  "short_name": "Omniverse 3D",
+  "description": "Six mondes ouverts 3D photoréalistes PBR en multijoueur temps réel WebRTC P2P : Metropolis OSM 1:1, Starfield Odyssey, Valheim Wildlands, Sea of Legends, Aetheria Chronicles et Extreme Horizon.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#05080f",
+  "theme_color": "#05080f",
+  "categories": ["games", "entertainment", "simulation"],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
