@@ -101,13 +101,15 @@ if (fs.existsSync(stylesPath)) {
   }
 }
 
-// 5. Upgrade MainActivity.java to enforce sticky immersive mode + API 28+ display cutout edge-to-edge
+// 5. Upgrade MainActivity.java to enforce sticky immersive mode, API 28+ cutout & 100% fixed WebView textZoom
 if (fs.existsSync(mainActivityPath)) {
   const immersiveActivity = `package com.axeldelaro.games3d;
 
 import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -123,6 +125,14 @@ public class MainActivity extends BridgeActivity {
             lp.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
             getWindow().setAttributes(lp);
+        }
+        if (getBridge() != null && getBridge().getWebView() != null) {
+            WebView webView = getBridge().getWebView();
+            WebSettings ws = webView.getSettings();
+            ws.setTextZoom(100);
+            ws.setSupportZoom(false);
+            ws.setBuiltInZoomControls(false);
+            ws.setDisplayZoomControls(false);
         }
         enableImmersiveMode();
     }
@@ -149,5 +159,16 @@ public class MainActivity extends BridgeActivity {
 }
 `;
   fs.writeFileSync(mainActivityPath, immersiveActivity, 'utf8');
-  console.log('[configure-android] Configured sticky immersive fullscreen & cutout mode in MainActivity.java.');
+  console.log('[configure-android] Configured sticky immersive fullscreen, textZoom(100) & cutout mode in MainActivity.java.');
+}
+
+// 6. Stamp monotonically increasing versionCode & versionName into app/build.gradle
+const appGradlePath = path.join(androidRoot, 'app/build.gradle');
+if (fs.existsSync(appGradlePath)) {
+  const runNumber = Math.max(2, Number.parseInt(process.env.GITHUB_RUN_NUMBER || '2', 10) || 2);
+  let gradle = fs.readFileSync(appGradlePath, 'utf8');
+  gradle = gradle.replace(/versionCode\s+\d+/, `versionCode ${runNumber}`);
+  gradle = gradle.replace(/versionName\s+"[^"]*"/, `versionName "1.0.${runNumber}"`);
+  fs.writeFileSync(appGradlePath, gradle, 'utf8');
+  console.log(`[configure-android] Updated app/build.gradle to versionCode ${runNumber} (1.0.${runNumber}).`);
 }

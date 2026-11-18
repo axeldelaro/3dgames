@@ -1616,30 +1616,30 @@ export class SeaOfLegendsWorld implements WorldInterface {
     const hullPct = Math.round(this.hullHealth);
 
     const btnStyle = (active: boolean) =>
-      `padding:6px 10px;border-radius:8px;border:1px solid ${
+      `border:1px solid ${
         active ? '#19d4c6' : 'rgba(255,255,255,0.16)'
       };background:${
-        active ? 'rgba(25,212,198,0.25)' : 'rgba(8,18,28,0.75)'
-      };color:#ecfeff;font-size:12px;font-weight:600;cursor:pointer;backdrop-filter:blur(6px);`;
+        active ? 'rgba(25,212,198,0.25)' : 'rgba(8,18,28,0.78)'
+      };color:#ecfeff;cursor:pointer;`;
 
     const html = `
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;pointer-events:auto;">
-        <span style="padding:5px 10px;border-radius:8px;background:rgba(8,18,28,0.85);border:1px solid rgba(255,209,102,0.45);color:#ffd166;font-size:12px;font-weight:700;">
-          🪙 $${this.doubloons.toLocaleString()} &nbsp; 🛡️ Coque ${hullPct}% &nbsp; ⛵ Voiles ${sailPct}%
+      <div>
+        <span style="padding:2px 6px;border-radius:5px;background:rgba(8,18,28,0.85);border:1px solid rgba(255,209,102,0.4);color:#ffd166;font-weight:700;">
+          🪙$${this.doubloons.toLocaleString()} 🛡️${hullPct}% ⛵${sailPct}%
         </span>
         <button data-act="helm" style="${btnStyle(this.atHelm)}">
-          ${this.atHelm ? '🚶 Quitter Barre [E/F]' : '⚓ Prendre la Barre [E]'}
+          ${this.atHelm ? '🚶 Pont' : '⚓ Barre'}
         </button>
         ${
           this.atHelm
-            ? `<button data-act="trim_left" style="${btnStyle(false)}">◀ Orienter Voiles</button>
-               <button data-act="trim_right" style="${btnStyle(false)}">Orienter Voiles ▶</button>
+            ? `<button data-act="trim_left" style="${btnStyle(false)}">◀ Voile</button>
+               <button data-act="trim_right" style="${btnStyle(false)}">Voile ▶</button>
                <button data-act="fire_port" style="${btnStyle(false)}">💥 Bâbord</button>
                <button data-act="fire_star" style="${btnStyle(false)}">💣 Tribord</button>`
             : `<button data-tool="sword" style="${btnStyle(tool === 'sword')}">⚔️ Sabre</button>
-               <button data-tool="hammer" style="${btnStyle(tool === 'hammer')}">🔨 Réparer Coque</button>
-               <button data-tool="axe" style="${btnStyle(tool === 'axe')}">⛏️ Creuser Trésor</button>
-               <button data-act="board" style="${btnStyle(false)}">🪢 Pont du Galion</button>`
+               <button data-tool="hammer" style="${btnStyle(tool === 'hammer')}">🔨 Coque</button>
+               <button data-tool="axe" style="${btnStyle(tool === 'axe')}">⛏️ Trésor</button>
+               <button data-act="board" style="${btnStyle(false)}">🪢 Galion</button>`
         }
       </div>
     `;

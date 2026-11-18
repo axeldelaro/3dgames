@@ -1846,24 +1846,22 @@ export class ExtremeHorizonWorld implements WorldInterface {
 
   private renderToolbar(): void {
     const pill = (active: boolean, accent = '#ff6b57') =>
-      `padding:6px 10px;border-radius:999px;border:1px solid ${
+      `border:1px solid ${
         active ? accent : 'rgba(255,255,255,0.18)'
       };background:${
-        active ? 'rgba(255,107,87,0.26)' : 'rgba(10,16,28,0.74)'
-      };color:${active ? '#ffd6cf' : '#e6eef8'};font-size:12px;font-weight:600;cursor:pointer;backdrop-filter:blur(8px);`;
+        active ? 'rgba(255,107,87,0.26)' : 'rgba(10,16,28,0.78)'
+      };color:${active ? '#ffd6cf' : '#e6eef8'};cursor:pointer;`;
 
     const html = `
-      <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
-        <button data-veh="jet" style="${pill(this.vehicleMode === 'jet', '#32f5ff')}">✈️ Jet Mach 2 [V]</button>
-        <button data-veh="truck4x4" style="${pill(this.vehicleMode === 'truck4x4', '#ff9f1c')}">🚙 4x4 Trial [V]</button>
-        <span style="opacity:0.35;color:#fff;">|</span>
+      <div>
+        <button data-veh="jet" style="${pill(this.vehicleMode === 'jet', '#32f5ff')}">✈️ Jet</button>
+        <button data-veh="truck4x4" style="${pill(this.vehicleMode === 'truck4x4', '#ff9f1c')}">🚙 4x4</button>
         <button data-massif="alpes" style="${pill(this.currentMassif === 'alpes')}">🏔️ Alpes</button>
         <button data-massif="canyon" style="${pill(this.currentMassif === 'canyon')}">🏜️ Canyon</button>
         <button data-massif="fuji" style="${pill(this.currentMassif === 'fuji')}">🗻 Fuji</button>
         <button data-massif="fjord" style="${pill(this.currentMassif === 'fjord')}">🌊 Fjord</button>
-        <span style="opacity:0.35;color:#fff;">|</span>
         <button data-act="runway" style="${pill(false)}">🛫 Piste</button>
-        <button data-act="race" style="${pill(this.raceActive, '#38d976')}">⏱️ Chrono</button>
+        <button data-act="race" style="${pill(this.raceActive, '#66f2a5')}">⏱️ Chrono</button>
       </div>
     `;
 

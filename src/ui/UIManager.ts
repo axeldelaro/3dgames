@@ -50,11 +50,11 @@ const AVATAR_COLOR_SWATCHES: ReadonlyArray<{ hex: string; name: string }> = [
 const ROOM_CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 const CONTEXT_LABELS: Record<ControlContextMode, string> = {
-  HUB: 'HUB CENTRAL',
-  ON_FOOT: 'EXPLORATION',
+  HUB: 'HUB',
+  ON_FOOT: 'À PIED',
   DRIVING: 'CONDUITE',
-  FLIGHT_SPACE: 'VOL / ESPACE',
-  NAVAL: 'NAVIGATION'
+  FLIGHT_SPACE: 'VOL',
+  NAVAL: 'NAVIRE'
 };
 
 const PRESET_SHORT_LABELS: Record<QualityPreset, string> = {
@@ -64,7 +64,7 @@ const PRESET_SHORT_LABELS: Record<QualityPreset, string> = {
 };
 
 const RADIAL_CATEGORY_LABELS: Record<RadialWheelItem['category'], string> = {
-  weapon: 'ARMEMENT',
+  weapon: 'ARME',
   tool: 'OUTIL',
   vehicle: 'VÉHICULE',
   emote: 'ACTION'
@@ -89,9 +89,13 @@ export class UIManager implements IUIManager {
   private readonly toastStackEl: HTMLElement;
   private readonly loaderEl: HTMLElement;
 
-  // Hub Elements
+  // Hub Elements & Popover Drawers
   private readonly pwaBtnEl: HTMLButtonElement;
   private readonly resumeBtnEl: HTMLButtonElement;
+  private readonly toggleLobbyBtnEl: HTMLButtonElement;
+  private readonly toggleSettingsBtnEl: HTMLButtonElement;
+  private readonly lobbyDrawerEl: HTMLElement;
+  private readonly settingsDrawerEl: HTMLElement;
   private readonly netStatusPillEl: HTMLElement;
   private readonly playerNameInputEl: HTMLInputElement;
   private readonly colorSwatchesEl: HTMLElement;
@@ -119,6 +123,7 @@ export class UIManager implements IUIManager {
   private readonly contextTagHudEl: HTMLElement;
   private readonly weatherTagHudEl: HTMLElement;
   private readonly statusHintHudEl: HTMLElement;
+  private readonly toolbarToggleBtnEl: HTMLButtonElement;
   private readonly worldToolbarEl: HTMLElement;
 
   private readonly telFpsEl: HTMLElement;
@@ -163,6 +168,7 @@ export class UIManager implements IUIManager {
   private hubVisible = true;
   private hasActiveWorld = false;
   private controlsModalOpen = false;
+  private toolbarCollapsed = false;
   private deferredInstallPrompt: BeforeInstallPromptEvent | null = null;
   private inviteCopiedTimer: number | null = null;
   private lobbyRefreshInterval: number | null = null;
@@ -170,6 +176,8 @@ export class UIManager implements IUIManager {
   private radialItems: RadialWheelItem[] = [];
   private onRadialSelect: ((item: RadialWheelItem) => void) | null = null;
   private radialOpen = false;
+  private inputRadialHeld = false;
+  private manualRadialLatch = false;
   private radialCommitted = false;
   private hoveredRadialIndex = -1;
   private radialSliceEls: SVGPathElement[] = [];
@@ -223,6 +231,10 @@ export class UIManager implements IUIManager {
     // Query bound Hub elements
     this.pwaBtnEl = this.mustQuery<HTMLButtonElement>(this.hubEl, '#omni-pwa-install-btn');
     this.resumeBtnEl = this.mustQuery<HTMLButtonElement>(this.hubEl, '#omni-resume-world-btn');
+    this.toggleLobbyBtnEl = this.mustQuery<HTMLButtonElement>(this.hubEl, '#omni-toggle-lobby-btn');
+    this.toggleSettingsBtnEl = this.mustQuery<HTMLButtonElement>(this.hubEl, '#omni-toggle-settings-btn');
+    this.lobbyDrawerEl = this.mustQuery<HTMLElement>(this.hubEl, '#omni-lobby-drawer');
+    this.settingsDrawerEl = this.mustQuery<HTMLElement>(this.hubEl, '#omni-settings-drawer');
     this.netStatusPillEl = this.mustQuery<HTMLElement>(this.hubEl, '#omni-net-status-pill');
     this.playerNameInputEl = this.mustQuery<HTMLInputElement>(this.hubEl, '#omni-player-name');
     this.colorSwatchesEl = this.mustQuery<HTMLElement>(this.hubEl, '#omni-color-swatches');
@@ -237,7 +249,7 @@ export class UIManager implements IUIManager {
 
     // Query bound HUD elements
     const radarCanvas = this.mustQuery<HTMLCanvasElement>(this.hudEl, '#omniverse-radar-canvas');
-    this.minimap = new Minimap3DRadar(radarCanvas, 220);
+    this.minimap = new Minimap3DRadar(radarCanvas, 180);
     this.radarCoordsEl = this.mustQuery<HTMLElement>(this.hudEl, '#omni-radar-coords');
     this.healthRowEl = this.mustQuery<HTMLElement>(this.hudEl, '#omni-health-row');
     this.healthFillEl = this.mustQuery<HTMLElement>(this.hudEl, '#omni-health-fill');
@@ -250,6 +262,7 @@ export class UIManager implements IUIManager {
     this.contextTagHudEl = this.mustQuery<HTMLElement>(this.hudEl, '#omni-hud-context-tag');
     this.weatherTagHudEl = this.mustQuery<HTMLElement>(this.hudEl, '#omni-hud-weather-tag');
     this.statusHintHudEl = this.mustQuery<HTMLElement>(this.hudEl, '#omni-hud-status-hint');
+    this.toolbarToggleBtnEl = this.mustQuery<HTMLButtonElement>(this.hudEl, '#omni-toolbar-toggle-btn');
     this.worldToolbarEl = this.mustQuery<HTMLElement>(this.hudEl, '#omniverse-world-toolbar');
 
     this.telFpsEl = this.mustQuery<HTMLElement>(this.hudEl, '#omni-tel-fps');
@@ -333,7 +346,9 @@ export class UIManager implements IUIManager {
     if (visible) {
       if (this.radialOpen) {
         this.hoveredRadialIndex = -1;
-        this.openRadialMenu(false);
+        this.manualRadialLatch = false;
+        this.inputRadialHeld = false;
+        this.applyRadialState(false);
       }
       if (typeof document !== 'undefined' && document.pointerLockElement) {
         try {
@@ -343,6 +358,8 @@ export class UIManager implements IUIManager {
         }
       }
       this.refreshLobbyUI();
+    } else {
+      this.closeAllHubDrawers();
     }
   }
 
@@ -359,7 +376,7 @@ export class UIManager implements IUIManager {
     this.loaderStatusEl.textContent =
       label ?? 'Compilation des shaders WebGL2 PBR & streaming procédural…';
 
-    const circumference = 264; // 2 * PI * 42
+    const circumference = 264;
     if (typeof progress === 'number' && Number.isFinite(progress)) {
       const normalized = progress >= 0 && progress <= 1 ? progress * 100 : progress;
       const clampedPct = Math.max(0, Math.min(100, Math.round(normalized)));
@@ -377,7 +394,7 @@ export class UIManager implements IUIManager {
     message: string,
     tone: 'info' | 'success' | 'warning' = 'info'
   ): void {
-    while (this.toastStackEl.children.length >= 4) {
+    while (this.toastStackEl.children.length >= 2) {
       const first = this.toastStackEl.firstElementChild;
       if (first) {
         first.remove();
@@ -414,12 +431,12 @@ export class UIManager implements IUIManager {
       toast.classList.add('is-leaving');
       window.setTimeout(() => {
         toast.remove();
-      }, 250);
-    }, 4000);
+      }, 220);
+    }, 2900);
   }
 
   public updateTelemetry(telemetry: HUDTelemetry): void {
-    // 1. Top-Right Discrete Telemetry Pill
+    // 1. Top-Right Compact Telemetry Pill
     const fpsRounded = Math.max(0, Math.round(telemetry.fps));
     const fpsText = `${fpsRounded} FPS`;
     if (fpsText !== this.lastHudCache.fpsText) {
@@ -440,14 +457,14 @@ export class UIManager implements IUIManager {
 
     const pingText =
       telemetry.peerCount > 0
-        ? `${Math.round(telemetry.pingMs)} ms • ${telemetry.peerCount} P2P`
-        : 'P2P PRÊT';
+        ? `${Math.round(telemetry.pingMs)}ms•${telemetry.peerCount}P`
+        : 'P2P';
     if (pingText !== this.lastHudCache.pingText) {
       this.lastHudCache.pingText = pingText;
       this.telPingEl.textContent = pingText;
     }
 
-    const presetText = `${PRESET_SHORT_LABELS[telemetry.qualityPreset]}${telemetry.autoScale ? '•AUTO' : ''}`;
+    const presetText = PRESET_SHORT_LABELS[telemetry.qualityPreset];
     if (presetText !== this.lastHudCache.presetText) {
       this.lastHudCache.presetText = presetText;
       this.telPresetEl.textContent = presetText;
@@ -457,7 +474,8 @@ export class UIManager implements IUIManager {
     // 2. Top-Center Active World & Context Status Pill
     if (telemetry.worldTitle !== this.lastHudCache.worldTitle) {
       this.lastHudCache.worldTitle = telemetry.worldTitle;
-      this.worldTitleHudEl.textContent = telemetry.worldTitle || 'OMNIVERSE AAA';
+      const shortTitle = (telemetry.worldTitle || 'OMNIVERSE').split('—')[0].split('&')[0].trim();
+      this.worldTitleHudEl.textContent = shortTitle;
     }
 
     if (telemetry.contextMode !== this.lastHudCache.contextMode) {
@@ -514,7 +532,7 @@ export class UIManager implements IUIManager {
       this.creditsRowEl.classList.add('is-hidden');
     }
 
-    // 4. Bottom-Right Vectorial Speedometer / Flight / Naval Gauge
+    // 4. Compact Vectorial Speedometer / Flight / Naval Gauge
     const showGauge =
       telemetry.contextMode === 'DRIVING' ||
       telemetry.contextMode === 'FLIGHT_SPACE' ||
@@ -533,7 +551,7 @@ export class UIManager implements IUIManager {
         this.speedValueEl.textContent = speedStr;
       }
 
-      this.speedUnitEl.textContent = telemetry.contextMode === 'NAVAL' ? 'KTS / KM/H' : 'KM/H';
+      this.speedUnitEl.textContent = telemetry.contextMode === 'NAVAL' ? 'KTS' : 'KM/H';
 
       const maxScaleSpeed =
         telemetry.contextMode === 'FLIGHT_SPACE'
@@ -554,7 +572,7 @@ export class UIManager implements IUIManager {
         telemetry.gear ??
         (telemetry.contextMode === 'FLIGHT_SPACE'
           ? telemetry.mach !== undefined && telemetry.mach >= 1
-            ? 'SUPERSONIC'
+            ? 'MACH+'
             : 'THR'
           : telemetry.contextMode === 'NAVAL'
             ? 'VOILES'
@@ -566,12 +584,12 @@ export class UIManager implements IUIManager {
 
       const subLeft =
         telemetry.altitudeM !== undefined
-          ? `ALT ${Math.round(telemetry.altitudeM)}m`
+          ? `${Math.round(telemetry.altitudeM)}m`
           : telemetry.rpm !== undefined
-            ? `${Math.round(telemetry.rpm)} RPM`
+            ? `${Math.round(telemetry.rpm)}tr`
             : telemetry.headingDeg !== undefined
-              ? `CAP ${Math.round(telemetry.headingDeg)}°`
-              : 'PBR ACTIF';
+              ? `${Math.round(telemetry.headingDeg)}°`
+              : 'PBR';
       if (subLeft !== this.lastHudCache.subLeft) {
         this.lastHudCache.subLeft = subLeft;
         this.subMetricLeftEl.textContent = subLeft;
@@ -586,7 +604,7 @@ export class UIManager implements IUIManager {
         this.subMetricRightEl.classList.remove('is-hidden');
         const subRight =
           telemetry.mach !== undefined
-            ? `M ${telemetry.mach.toFixed(2)}`
+            ? `M${telemetry.mach.toFixed(1)}`
             : telemetry.headingDeg !== undefined
               ? `${Math.round(telemetry.headingDeg)}°`
               : '';
@@ -607,7 +625,7 @@ export class UIManager implements IUIManager {
     this.minimap.render(playerPos, playerYaw, markers, gpsRoute);
 
     const compassDeg = ((Math.round((-playerYaw * 180) / Math.PI) % 360) + 360) % 360;
-    const coordsText = `${String(compassDeg).padStart(3, '0')}° • X ${Math.round(playerPos.x)} Z ${Math.round(playerPos.z)}`;
+    const coordsText = `${String(compassDeg).padStart(3, '0')}° • ${Math.round(playerPos.x)},${Math.round(playerPos.z)}`;
     if (coordsText !== this.lastHudCache.coords) {
       this.lastHudCache.coords = coordsText;
       this.radarCoordsEl.textContent = coordsText;
@@ -617,8 +635,11 @@ export class UIManager implements IUIManager {
   public setWorldToolbarHTML(html: string, bindEvents?: (container: HTMLElement) => void): void {
     const trimmed = html.trim();
     this.worldToolbarEl.innerHTML = trimmed;
-    this.worldToolbarEl.classList.toggle('is-empty', trimmed.length === 0);
-    if (trimmed.length > 0 && bindEvents) {
+    const isEmpty = trimmed.length === 0;
+    this.worldToolbarEl.classList.toggle('is-empty', isEmpty);
+    this.toolbarToggleBtnEl.classList.toggle('is-hidden', isEmpty);
+    this.worldToolbarEl.classList.toggle('is-collapsed', !isEmpty && this.toolbarCollapsed);
+    if (!isEmpty && bindEvents) {
       bindEvents(this.worldToolbarEl);
     }
   }
@@ -631,6 +652,11 @@ export class UIManager implements IUIManager {
   }
 
   public openRadialMenu(open: boolean): void {
+    this.inputRadialHeld = open;
+    this.applyRadialState(this.inputRadialHeld || this.manualRadialLatch);
+  }
+
+  private applyRadialState(open: boolean): void {
     if (open === this.radialOpen) {
       return;
     }
@@ -648,10 +674,13 @@ export class UIManager implements IUIManager {
       this.audio.playUIClick();
     } else {
       const selectedIdx = this.hoveredRadialIndex;
-      const shouldCommit = !this.radialCommitted && selectedIdx >= 0 && selectedIdx < this.radialItems.length;
+      const shouldCommit =
+        !this.radialCommitted && selectedIdx >= 0 && selectedIdx < this.radialItems.length;
       this.radialOpen = false;
+      this.manualRadialLatch = false;
       this.hoveredRadialIndex = -1;
       this.radialWheelEl.classList.add('is-hidden');
+      window.dispatchEvent(new CustomEvent('omniverse:close-radial'));
 
       if (shouldCommit) {
         this.radialCommitted = true;
@@ -691,7 +720,7 @@ export class UIManager implements IUIManager {
   }
 
   /* ========================================================================
-     DOM CONSTRUCTION (HUB, HUD, RADIAL, MODAL, LOADER)
+     DOM CONSTRUCTION (COMPACT HUB, HUD, RADIAL, MODAL, LOADER)
      ======================================================================== */
 
   private createHubDOM(): HTMLElement {
@@ -704,168 +733,161 @@ export class UIManager implements IUIManager {
         <div class="omni-brand-cluster">
           <div class="omni-brand-emblem" aria-hidden="true">
             <svg viewBox="0 0 32 32" fill="none">
-              <polygon points="16,2 29,9.5 29,22.5 16,30 3,22.5 3,9.5" stroke="#38e2ff" stroke-width="1.8" fill="rgba(56,226,255,0.1)"/>
-              <polygon points="16,7 24,11.6 24,20.4 16,25 8,20.4 8,11.6" stroke="#ffb347" stroke-width="1.4" fill="none"/>
-              <circle cx="16" cy="16" r="3" fill="#7ceeff"/>
+              <polygon points="16,2 29,9.5 29,22.5 16,30 3,22.5 3,9.5" stroke="#38e2ff" stroke-width="2" fill="rgba(56,226,255,0.12)"/>
+              <circle cx="16" cy="16" r="4" fill="#ffb347"/>
             </svg>
           </div>
-          <div class="omni-brand-titles">
-            <div class="omni-brand-title-row">
-              <h1 class="omni-brand-title">3D GAMES : <span>OMNIVERSE AAA</span></h1>
-              <span class="omni-engine-badge">
-                <span class="omni-pulse-dot"></span>
-                WEBGL2 • PBR • P2P
-              </span>
-            </div>
-            <p class="omni-brand-subtitle">Six Mondes Ouverts 3D Photoréalistes Temps Réel • Coopération Serverless WebRTC</p>
+          <div class="omni-brand-title-row">
+            <h1 class="omni-brand-title">3D GAMES : <span>OMNIVERSE</span></h1>
+            <span class="omni-engine-badge"><span class="omni-pulse-dot"></span>PBR • P2P</span>
           </div>
         </div>
 
         <div class="omni-header-actions">
           <button type="button" id="omni-resume-world-btn" class="omni-resume-btn is-hidden">
-            ▶ Reprendre le Monde
+            ▶ Reprendre
+          </button>
+          <button type="button" id="omni-toggle-lobby-btn" class="omni-hdr-btn" title="Salon Multijoueur WebRTC P2P">
+            🌐 <span>Salon</span>
+            <span id="omni-net-status-pill" class="omni-net-status-pill">SOLO</span>
+          </button>
+          <button type="button" id="omni-toggle-settings-btn" class="omni-hdr-btn" title="Qualité Graphique PBR & Audio">
+            ⚙ <span class="omni-btn-label-long">Options</span>
+          </button>
+          <button type="button" id="omni-open-controls-btn" class="omni-hdr-btn" title="Aide & Commandes">
+            🎮 <span class="omni-btn-label-long">Aide</span>
           </button>
           <button type="button" id="omni-pwa-install-btn" class="omni-pwa-btn is-hidden">
-            ⚡ Installer l'App
+            ⚡ App
           </button>
           <a
             class="omni-apk-btn"
             href="${APK_DOWNLOAD_URL}"
             target="_blank"
             rel="noopener"
+            title="Télécharger l'APK Android natif (3dgames.apk)"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <rect x="5" y="2" width="14" height="20" rx="2.5"/>
-              <path d="M12 7v7"/>
-              <path d="m9 11 3 3 3-3"/>
-              <line x1="9" y1="18" x2="15" y2="18"/>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/>
             </svg>
-            <span>📱 Télécharger l'APK Android (3dgames.apk)</span>
+            <span>APK</span>
           </a>
         </div>
       </header>
 
-      <div class="omni-hub-grid">
-        <!-- Serverless WebRTC P2P Lobby Panel -->
-        <aside class="omni-lobby-panel" aria-label="Salon Multijoueur WebRTC P2P">
-          <div class="omni-panel-header">
-            <div class="omni-panel-title">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/>
-                <line x1="10.5" y1="7.5" x2="6.5" y2="16.5"/><line x1="13.5" y1="7.5" x2="17.5" y2="16.5"/>
-                <line x1="8" y1="19" x2="16" y2="19"/>
-              </svg>
-              <span>LOBBY WEBRTC P2P</span>
-            </div>
-            <span id="omni-net-status-pill" class="omni-net-status-pill">SOLO PRÊT</span>
+      <!-- Slide-Over Popover 1: Serverless WebRTC P2P Lobby -->
+      <aside id="omni-lobby-drawer" class="omni-hub-drawer is-hidden" aria-label="Salon Multijoueur WebRTC P2P">
+        <div class="omni-panel-header">
+          <div class="omni-panel-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/>
+              <line x1="10.5" y1="7.5" x2="6.5" y2="16.5"/><line x1="13.5" y1="7.5" x2="17.5" y2="16.5"/>
+            </svg>
+            <span>SALON MULTIJOUEUR P2P</span>
           </div>
+          <button type="button" id="omni-close-lobby-btn" class="omni-drawer-close-btn" aria-label="Fermer">✕</button>
+        </div>
 
-          <div class="omni-field-group">
-            <label class="omni-field-label" for="omni-player-name">Indicatif Joueur (Callsign)</label>
+        <div class="omni-field-group">
+          <label class="omni-field-label" for="omni-player-name">Pseudo Joueur</label>
+          <input
+            id="omni-player-name"
+            class="omni-input"
+            type="text"
+            maxlength="18"
+            placeholder="Pilote-Alpha"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+
+        <div class="omni-field-group">
+          <span class="omni-field-label">Couleur Avatar</span>
+          <div id="omni-color-swatches" class="omni-color-swatches" role="radiogroup" aria-label="Couleur Avatar"></div>
+        </div>
+
+        <div class="omni-field-group">
+          <label class="omni-field-label" for="omni-room-code">Code Salon (4 caract.)</label>
+          <div class="omni-room-row">
             <input
-              id="omni-player-name"
-              class="omni-input"
+              id="omni-room-code"
+              class="omni-room-code-input"
               type="text"
-              maxlength="18"
-              placeholder="Ex: Pilote-Alpha"
+              maxlength="4"
+              placeholder="ABCD"
               autocomplete="off"
               spellcheck="false"
             />
-          </div>
-
-          <div class="omni-field-group">
-            <span class="omni-field-label">Couleur d'Accent Avatar</span>
-            <div id="omni-color-swatches" class="omni-color-swatches" role="radiogroup" aria-label="Couleur Avatar"></div>
-          </div>
-
-          <div class="omni-field-group">
-            <label class="omni-field-label" for="omni-room-code">Code Salon 4 Lettres / Chiffres</label>
-            <div class="omni-room-row">
-              <input
-                id="omni-room-code"
-                class="omni-room-code-input"
-                type="text"
-                maxlength="4"
-                placeholder="ABCD"
-                autocomplete="off"
-                spellcheck="false"
-              />
-              <div class="omni-room-actions">
-                <button type="button" id="omni-create-room-btn" class="omni-btn is-amber" title="Créer un salon aléatoire">
-                  Créer
-                </button>
-                <button type="button" id="omni-join-room-btn" class="omni-btn" title="Rejoindre ce code salon">
-                  Rejoindre
-                </button>
-                <button type="button" id="omni-leave-room-btn" class="omni-btn is-danger is-hidden" title="Quitter le salon">
-                  ✕
-                </button>
-              </div>
+            <div class="omni-room-actions">
+              <button type="button" id="omni-create-room-btn" class="omni-btn is-amber">Créer</button>
+              <button type="button" id="omni-join-room-btn" class="omni-btn">Joindre</button>
+              <button type="button" id="omni-leave-room-btn" class="omni-btn is-danger is-hidden" title="Quitter">✕</button>
             </div>
           </div>
-
-          <button type="button" id="omni-copy-invite-btn" class="omni-invite-btn">
-            <span>🔗 Copier le lien d'invitation directe</span>
-          </button>
-          <div id="omni-invite-preview" class="omni-invite-url-preview">${BASE_INVITE_URL}?room=----</div>
-
-          <div class="omni-squad-section">
-            <span class="omni-field-label">Escouade Connectée & Latence</span>
-            <div id="omni-squad-list" class="omni-squad-list"></div>
-          </div>
-        </aside>
-
-        <!-- 6 Open-World Showcase Cards -->
-        <main id="omni-worlds-grid" class="omni-worlds-grid" aria-label="Catalogue des 6 Mondes Ouverts"></main>
-      </div>
-
-      <!-- Graphics & Audio Bar -->
-      <footer class="omni-settings-bar">
-        <div class="omni-settings-cluster">
-          <div class="omni-setting-item">
-            <span class="omni-setting-label">Qualité PBR</span>
-            <div class="omni-segmented" role="group" aria-label="Qualité Graphique">
-              <button type="button" class="omni-seg-btn" data-preset="ULTRA">Ultra AAA</button>
-              <button type="button" class="omni-seg-btn" data-preset="HIGH">Élevé</button>
-              <button type="button" class="omni-seg-btn" data-preset="MOBILE_PERF">Performance Mobile</button>
-            </div>
-          </div>
-
-          <button type="button" id="omni-autoscale-btn" class="omni-toggle-btn">
-            <span>Auto-Scale 60 FPS</span>
-            <span class="omni-toggle-track"><span class="omni-toggle-thumb"></span></span>
-          </button>
         </div>
 
-        <div class="omni-settings-cluster">
-          <div class="omni-setting-item">
-            <span class="omni-setting-label">Master</span>
-            <div class="omni-slider-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
-              </svg>
-              <input id="omni-master-vol" class="omni-range" type="range" min="0" max="100" value="80" />
-              <span id="omni-master-val" class="omni-slider-val">80%</span>
-            </div>
-          </div>
+        <button type="button" id="omni-copy-invite-btn" class="omni-invite-btn">
+          <span>🔗 Copier lien d'invitation</span>
+        </button>
+        <div id="omni-invite-preview" class="omni-invite-url-preview">${BASE_INVITE_URL}?room=----</div>
 
-          <div class="omni-setting-item">
-            <span class="omni-setting-label">Musique</span>
-            <div class="omni-slider-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
-              </svg>
-              <input id="omni-music-vol" class="omni-range" type="range" min="0" max="100" value="55" />
-              <span id="omni-music-val" class="omni-slider-val">55%</span>
-            </div>
-          </div>
-
-          <button type="button" id="omni-open-controls-btn" class="omni-btn">
-            🎮 Commandes (PC / Manette / Mobile)
-          </button>
+        <div class="omni-squad-section">
+          <span class="omni-field-label">Escouade Connectée</span>
+          <div id="omni-squad-list" class="omni-squad-list"></div>
         </div>
-      </footer>
+      </aside>
+
+      <!-- Slide-Over Popover 2: PBR Graphics & Audio Settings -->
+      <aside id="omni-settings-drawer" class="omni-hub-drawer is-hidden" aria-label="Options Graphiques et Audio">
+        <div class="omni-panel-header">
+          <div class="omni-panel-title">
+            <span>⚙ QUALITÉ PBR & AUDIO</span>
+          </div>
+          <button type="button" id="omni-close-settings-btn" class="omni-drawer-close-btn" aria-label="Fermer">✕</button>
+        </div>
+
+        <div class="omni-field-group">
+          <span class="omni-field-label">Préréglage Rendu PBR</span>
+          <div class="omni-segmented" role="group" aria-label="Qualité Graphique">
+            <button type="button" class="omni-seg-btn" data-preset="ULTRA">Ultra</button>
+            <button type="button" class="omni-seg-btn" data-preset="HIGH">Élevé</button>
+            <button type="button" class="omni-seg-btn" data-preset="MOBILE_PERF">Mobile</button>
+          </div>
+        </div>
+
+        <button type="button" id="omni-autoscale-btn" class="omni-toggle-btn">
+          <span>Auto-Scale 60 FPS</span>
+          <span class="omni-toggle-track"><span class="omni-toggle-thumb"></span></span>
+        </button>
+
+        <div class="omni-field-group">
+          <span class="omni-field-label">Volume Principal</span>
+          <div class="omni-slider-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            </svg>
+            <input id="omni-master-vol" class="omni-range" type="range" min="0" max="100" value="80" />
+            <span id="omni-master-val" class="omni-slider-val">80%</span>
+          </div>
+        </div>
+
+        <div class="omni-field-group">
+          <span class="omni-field-label">Musique Adaptative</span>
+          <div class="omni-slider-wrap">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+            </svg>
+            <input id="omni-music-vol" class="omni-range" type="range" min="0" max="100" value="55" />
+            <span id="omni-music-val" class="omni-slider-val">55%</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Centered 6 Open-World Cards -->
+      <main class="omni-hub-main">
+        <div id="omni-worlds-grid" class="omni-worlds-grid" aria-label="Catalogue des 6 Mondes Ouverts"></div>
+      </main>
     `;
 
     return hub;
@@ -878,72 +900,76 @@ export class UIManager implements IUIManager {
     hud.setAttribute('aria-label', 'Interface tête haute en jeu');
 
     hud.innerHTML = `
-      <!-- Top-Left: Tilted 3D Radar Minimap + Vitals + Credits -->
+      <!-- Top-Left: Side-by-Side Compact Radar + Vitals -->
       <div class="omni-hud-topleft">
         <div class="omni-radar-shell">
           <div class="omni-radar-bezel">
             <canvas id="omniverse-radar-canvas"></canvas>
           </div>
         </div>
-        <div id="omni-radar-coords" class="omni-radar-coords">000° • X 0 Z 0</div>
 
-        <div class="omni-vitals-stack">
-          <div id="omni-health-row" class="omni-vital-bar-row is-hidden">
-            <span class="omni-vital-label">PV</span>
-            <div class="omni-vital-track">
-              <div id="omni-health-fill" class="omni-vital-fill is-health"></div>
+        <div class="omni-topleft-side">
+          <div id="omni-radar-coords" class="omni-radar-coords">000° • 0,0</div>
+          <div class="omni-vitals-stack">
+            <div id="omni-health-row" class="omni-vital-bar-row is-hidden">
+              <span class="omni-vital-label">PV</span>
+              <div class="omni-vital-track">
+                <div id="omni-health-fill" class="omni-vital-fill is-health"></div>
+              </div>
             </div>
-          </div>
-          <div id="omni-stamina-row" class="omni-vital-bar-row is-hidden">
-            <span class="omni-vital-label">END</span>
-            <div class="omni-vital-track">
-              <div id="omni-stamina-fill" class="omni-vital-fill is-stamina"></div>
+            <div id="omni-stamina-row" class="omni-vital-bar-row is-hidden">
+              <span class="omni-vital-label">END</span>
+              <div class="omni-vital-track">
+                <div id="omni-stamina-fill" class="omni-vital-fill is-stamina"></div>
+              </div>
             </div>
-          </div>
-          <div id="omni-credits-row" class="omni-credits-row is-hidden">
-            <span>CRÉDITS</span>
-            <span id="omni-credits-val">$ 0</span>
+            <div id="omni-credits-row" class="omni-credits-row is-hidden">
+              <span id="omni-credits-val">$ 0</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- Top-Center: Active World Status & Contextual Toolbar -->
+      <!-- Top-Center: Compact Status Pill + Collapsible Single-Row World Toolbar -->
       <div class="omni-hud-topcenter">
         <div class="omni-world-status-pill">
           <span id="omni-hud-world-title">OMNIVERSE</span>
-          <span id="omni-hud-context-tag" class="omni-context-tag">EXPLORATION</span>
+          <span id="omni-hud-context-tag" class="omni-context-tag">À PIED</span>
           <span id="omni-hud-weather-tag" class="omni-weather-tag is-hidden"></span>
           <span id="omni-hud-status-hint" class="omni-status-hint is-hidden"></span>
+          <button type="button" id="omni-toolbar-toggle-btn" class="omni-toolbar-toggle-btn is-hidden" title="Afficher / Masquer les outils du monde">
+            ▴
+          </button>
         </div>
         <div id="omniverse-world-toolbar" class="is-empty"></div>
       </div>
 
-      <!-- Top-Right: Telemetry Pill + Lobby Invite + Hub Trigger -->
+      <!-- Top-Right: Single-Row Compact Telemetry & Actions -->
       <div class="omni-hud-topright">
         <div class="omni-telemetry-pill">
           <span id="omni-tel-fps" class="omni-tel-fps">60 FPS</span>
-          <span class="omni-tel-sep">•</span>
-          <span id="omni-tel-draws" class="omni-tel-extra">0 DC</span>
           <span class="omni-tel-sep omni-tel-extra">•</span>
-          <span id="omni-tel-ping">P2P PRÊT</span>
-          <span class="omni-tel-sep">•</span>
-          <span id="omni-tel-preset">ULTRA</span>
+          <span id="omni-tel-draws" class="omni-tel-extra">0 DC</span>
+          <span class="omni-tel-sep omni-tel-ping-wrap">•</span>
+          <span id="omni-tel-ping" class="omni-tel-ping-wrap">P2P</span>
+          <span class="omni-tel-sep omni-tel-extra">•</span>
+          <span id="omni-tel-preset" class="omni-tel-extra">ULTRA</span>
         </div>
 
         <div class="omni-topright-row">
           <button type="button" id="omni-hud-radial-btn" class="omni-hud-action-btn" title="Roue d'équipement (Tab)">
-            ☸ ÉQUIP.
+            ☸
           </button>
           <button type="button" id="omni-hud-invite-btn" class="omni-hud-action-btn is-amber" title="Copier le lien d'invitation P2P">
-            🔗 <span id="omni-hud-invite-label">INVITER</span>
+            🔗 <span id="omni-hud-invite-label" class="omni-btn-label-long">P2P</span>
           </button>
-          <button type="button" id="omni-hud-hub-btn" class="omni-hud-action-btn">
-            ⌂ HUB / MONDES
+          <button type="button" id="omni-hud-hub-btn" class="omni-hud-action-btn" title="Retour au Hub des 6 Mondes">
+            ⌂ <span>HUB</span>
           </button>
         </div>
       </div>
 
-      <!-- Bottom-Right: Vectorial SVG Speedometer / Tachometer / Altitude / Mach / Wind Rose -->
+      <!-- Compact Vectorial Speedometer (Bottom-Right on PC, Bottom-Center on Mobile) -->
       <div id="omniverse-speed-gauge" class="is-hidden">
         <div class="omni-gauge-svg-wrap">
           <svg class="omni-gauge-svg" viewBox="0 0 160 120">
@@ -954,21 +980,19 @@ export class UIManager implements IUIManager {
                 <stop offset="100%" stop-color="#ffb347"/>
               </linearGradient>
             </defs>
-            <!-- Background 240-deg Gauge Track -->
             <path
               d="M 20.2 112.5 A 69 69 0 1 1 139.8 112.5"
               fill="none"
               stroke="rgba(56, 226, 255, 0.16)"
-              stroke-width="8"
+              stroke-width="9"
               stroke-linecap="round"
             />
-            <!-- Dynamic Speed / RPM Arc -->
             <path
               id="omni-gauge-arc-fill"
               d="M 20.2 112.5 A 69 69 0 1 1 139.8 112.5"
               fill="none"
               stroke="url(#omniGaugeGrad)"
-              stroke-width="8"
+              stroke-width="9"
               stroke-linecap="round"
               stroke-dasharray="${GAUGE_ARC_CIRCUMFERENCE}"
               stroke-dashoffset="${GAUGE_ARC_CIRCUMFERENCE}"
@@ -982,7 +1006,7 @@ export class UIManager implements IUIManager {
         </div>
 
         <div class="omni-gauge-submetrics">
-          <span id="omni-gauge-sub-left">0 RPM</span>
+          <span id="omni-gauge-sub-left">0tr</span>
           <span id="omni-gauge-sub-right"></span>
           <span id="omni-wind-rose" class="omni-wind-rose is-hidden">
             <span>VENT</span>
@@ -997,8 +1021,8 @@ export class UIManager implements IUIManager {
       <!-- Center Precision Crosshair -->
       <div id="omniverse-crosshair" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="2" fill="#eef6ff"/>
-          <path d="M12 3v4M12 17v4M3 12h4M17 12h4" stroke="rgba(56,226,255,0.85)" stroke-width="1.4" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="1.8" fill="#eef6ff"/>
+          <path d="M12 4v3.5M12 16.5V20M4 12h3.5M16.5 12H20" stroke="rgba(56,226,255,0.8)" stroke-width="1.4" stroke-linecap="round"/>
         </svg>
       </div>
 
@@ -1010,46 +1034,31 @@ export class UIManager implements IUIManager {
               <rect x="78" y="38" width="244" height="244" rx="14"/>
             </clipPath>
           </defs>
-
-          <!-- Roll Scale Arc & Pointer -->
           <path d="M 130 56 A 92 92 0 0 1 270 56" stroke="rgba(56,226,255,0.55)" stroke-width="1.4"/>
           <g id="omni-fighter-roll-group">
             <polygon points="200,40 195,50 205,50" fill="#ffb347"/>
           </g>
-
-          <!-- Clipped Pitch Ladder -->
           <g clip-path="url(#omniFighterLadderClip)">
             <g id="omni-fighter-pitch-group">
-              <!-- +20 deg -->
               <path d="M145 98h32v6 M255 98h-32v6" stroke="#38e2ff" stroke-width="1.5"/>
               <text x="136" y="102" fill="#38e2ff" font-family="Rajdhani, sans-serif" font-size="10" font-weight="700" text-anchor="end">+20</text>
-              <!-- +10 deg -->
               <path d="M152 129h26v5 M248 129h-26v5" stroke="#38e2ff" stroke-width="1.5"/>
               <text x="144" y="133" fill="#38e2ff" font-family="Rajdhani, sans-serif" font-size="10" font-weight="700" text-anchor="end">+10</text>
-              <!-- 0 deg Horizon -->
               <line x1="108" y1="160" x2="176" y2="160" stroke="#66f2a5" stroke-width="2"/>
               <line x1="224" y1="160" x2="292" y2="160" stroke="#66f2a5" stroke-width="2"/>
-              <!-- -10 deg Dive -->
               <path d="M152 191h26v-5 M248 191h-26v-5" stroke="#ffb347" stroke-width="1.5" stroke-dasharray="5 3"/>
               <text x="144" y="195" fill="#ffb347" font-family="Rajdhani, sans-serif" font-size="10" font-weight="700" text-anchor="end">-10</text>
-              <!-- -20 deg Dive -->
               <path d="M145 222h32v-6 M255 222h-32v-6" stroke="#ffb347" stroke-width="1.5" stroke-dasharray="5 3"/>
               <text x="136" y="226" fill="#ffb347" font-family="Rajdhani, sans-serif" font-size="10" font-weight="700" text-anchor="end">-20</text>
             </g>
           </g>
-
-          <!-- Central Boresight Flight Vector 'W' -->
           <path d="M182 160h10l4 6 4-6 4 6 4-6h10" stroke="#eef6ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-
-          <!-- Left Mach Tape Box -->
           <rect x="8" y="144" width="76" height="30" rx="5" fill="rgba(5,12,22,0.72)" stroke="rgba(56,226,255,0.55)" stroke-width="1.3"/>
           <text id="omni-fighter-mach" x="46" y="163" fill="#7ceeff" font-family="Orbitron, sans-serif" font-size="10.5" font-weight="800" text-anchor="middle">MACH 0.00</text>
-
-          <!-- Right Altitude Tape Box -->
           <rect x="316" y="144" width="76" height="30" rx="5" fill="rgba(5,12,22,0.72)" stroke="rgba(56,226,255,0.55)" stroke-width="1.3"/>
           <text id="omni-fighter-alt" x="354" y="163" fill="#7ceeff" font-family="Orbitron, sans-serif" font-size="10.5" font-weight="800" text-anchor="middle">ALT 0 M</text>
         </svg>
-        <div id="omni-fighter-stall" class="omni-fighter-stall is-hidden">⚠ STALL / DÉCROCHAGE</div>
+        <div id="omni-fighter-stall" class="omni-fighter-stall is-hidden">⚠ DÉCROCHAGE</div>
       </div>
     `;
 
@@ -1067,8 +1076,8 @@ export class UIManager implements IUIManager {
         <svg class="omni-radial-svg" viewBox="-170 -170 340 340"></svg>
         <div id="omni-radial-labels"></div>
         <div class="omni-radial-center">
-          <span id="omni-radial-center-cat" class="omni-radial-center-cat">SÉLECTION</span>
-          <span id="omni-radial-center-name" class="omni-radial-center-name">Glissez / Cliquez</span>
+          <span id="omni-radial-center-cat" class="omni-radial-center-cat">ROUE</span>
+          <span id="omni-radial-center-name" class="omni-radial-center-name">Choisir</span>
         </div>
       </div>
     `;
@@ -1093,35 +1102,33 @@ export class UIManager implements IUIManager {
             <h4>CLAVIER & SOURIS (PC)</h4>
             <div class="omni-bind-row"><span>Déplacement / Vol</span><span class="omni-kbd">ZQSD / WASD</span></div>
             <div class="omni-bind-row"><span>Caméra / Visée</span><span class="omni-kbd">Souris</span></div>
-            <div class="omni-bind-row"><span>Sprint / Postcombustion</span><span class="omni-kbd">Maj (Shift)</span></div>
-            <div class="omni-bind-row"><span>Saut / Paravoile / Monter</span><span class="omni-kbd">Espace</span></div>
-            <div class="omni-bind-row"><span>Entrer / Sortir Véhicule</span><span class="omni-kbd">E / F</span></div>
-            <div class="omni-bind-row"><span>Action / Tir / Construire</span><span class="omni-kbd">Clic Gauche</span></div>
-            <div class="omni-bind-row"><span>Viser / Frein / Secondaire</span><span class="omni-kbd">Clic Droit</span></div>
-            <div class="omni-bind-row"><span>Roue Radiale Slow-Mo</span><span class="omni-kbd">Tab</span></div>
-            <div class="omni-bind-row"><span>Changer Caméra</span><span class="omni-kbd">C / V</span></div>
-            <div class="omni-bind-row"><span>Retour Hub Mondes</span><span class="omni-kbd">Échap</span></div>
+            <div class="omni-bind-row"><span>Sprint / Boost</span><span class="omni-kbd">Shift</span></div>
+            <div class="omni-bind-row"><span>Saut / Paravoile</span><span class="omni-kbd">Espace</span></div>
+            <div class="omni-bind-row"><span>Véhicule / Interagir</span><span class="omni-kbd">E / F</span></div>
+            <div class="omni-bind-row"><span>Action / Tir</span><span class="omni-kbd">Clic G</span></div>
+            <div class="omni-bind-row"><span>Viser / Frein</span><span class="omni-kbd">Clic D</span></div>
+            <div class="omni-bind-row"><span>Roue Radiale</span><span class="omni-kbd">Tab</span></div>
+            <div class="omni-bind-row"><span>Retour Hub</span><span class="omni-kbd">Échap</span></div>
           </div>
 
           <div class="omni-controls-col">
-            <h4>MANETTE (XBOX / DUALSENSE)</h4>
-            <div class="omni-bind-row"><span>Mouvement / Direction</span><span class="omni-kbd">Stick Gauche</span></div>
-            <div class="omni-bind-row"><span>Caméra Orbitale 360°</span><span class="omni-kbd">Stick Droit</span></div>
-            <div class="omni-bind-row"><span>Accélérer / Action</span><span class="omni-kbd">RT / R2</span></div>
-            <div class="omni-bind-row"><span>Freiner / Viser</span><span class="omni-kbd">LT / L2</span></div>
-            <div class="omni-bind-row"><span>Saut / Paravoile</span><span class="omni-kbd">A / Croix</span></div>
-            <div class="omni-bind-row"><span>Interagir / Véhicule</span><span class="omni-kbd">X / Carré</span></div>
-            <div class="omni-bind-row"><span>Sprint / Boost</span><span class="omni-kbd">L3 / RB</span></div>
+            <h4>MANETTE (XBOX / PS5)</h4>
+            <div class="omni-bind-row"><span>Mouvement</span><span class="omni-kbd">Stick G</span></div>
+            <div class="omni-bind-row"><span>Caméra 360°</span><span class="omni-kbd">Stick D</span></div>
+            <div class="omni-bind-row"><span>Gaz / Tir</span><span class="omni-kbd">RT / R2</span></div>
+            <div class="omni-bind-row"><span>Frein / Viser</span><span class="omni-kbd">LT / L2</span></div>
+            <div class="omni-bind-row"><span>Saut / Planeur</span><span class="omni-kbd">A / Croix</span></div>
+            <div class="omni-bind-row"><span>Interagir</span><span class="omni-kbd">X / Carré</span></div>
             <div class="omni-bind-row"><span>Roue Radiale</span><span class="omni-kbd">LB / L1</span></div>
           </div>
 
           <div class="omni-controls-col">
-            <h4>TACTILE (ANDROID & MOBILE)</h4>
-            <div class="omni-bind-row"><span>Déplacement Analogique</span><span class="omni-kbd">Joystick Gauche</span></div>
-            <div class="omni-bind-row"><span>Caméra / Visée Libre</span><span class="omni-kbd">Glisser Droite</span></div>
+            <h4>TACTILE (ANDROID / APK)</h4>
+            <div class="omni-bind-row"><span>Déplacement 360°</span><span class="omni-kbd">Stick Gauche</span></div>
+            <div class="omni-bind-row"><span>Caméra Libre</span><span class="omni-kbd">Glisser Droite</span></div>
             <div class="omni-bind-row"><span>Actions Contextuelles</span><span class="omni-kbd">Boutons SVG</span></div>
-            <div class="omni-bind-row"><span>Équipement / Véhicules</span><span class="omni-kbd">☸ ÉQUIP.</span></div>
-            <div class="omni-bind-row"><span>Application Native</span><span class="omni-kbd">3dgames.apk</span></div>
+            <div class="omni-bind-row"><span>Roue d'Équipement</span><span class="omni-kbd">☸ Haut-Droite</span></div>
+            <div class="omni-bind-row"><span>Replier Outils Monde</span><span class="omni-kbd">▴ Haut-Centre</span></div>
           </div>
         </div>
       </div>
@@ -1179,7 +1186,6 @@ export class UIManager implements IUIManager {
      ======================================================================== */
 
   private initializeSwatchesAndCards(): void {
-    // 1. Populate Avatar Swatches
     const initialColor = this.network.playerColor || AVATAR_COLOR_SWATCHES[0].hex;
     this.colorSwatchesEl.innerHTML = '';
 
@@ -1207,7 +1213,6 @@ export class UIManager implements IUIManager {
       this.colorSwatchesEl.appendChild(btn);
     }
 
-    // 2. Populate 6 Open-World Showcase Cards from WORLD_CATALOG
     const grid = this.mustQuery<HTMLElement>(this.hubEl, '#omni-worlds-grid');
     grid.innerHTML = '';
 
@@ -1217,7 +1222,6 @@ export class UIManager implements IUIManager {
       grid.appendChild(card);
     }
 
-    // 3. Populate Quality Buttons map
     const segBtns = this.hubEl.querySelectorAll<HTMLButtonElement>('.omni-seg-btn[data-preset]');
     segBtns.forEach((btn) => {
       const preset = btn.dataset.preset as QualityPreset | undefined;
@@ -1233,42 +1237,101 @@ export class UIManager implements IUIManager {
     card.style.setProperty('--world-accent', world.accentColor);
 
     const featuresHTML = world.features
+      .slice(0, 3)
       .map((feat) => `<span class="omni-feature-chip">${this.escapeHTML(feat)}</span>`)
       .join('');
 
     card.innerHTML = `
-      <div class="omni-world-card-top">
-        <div class="omni-world-header-row">
-          <div class="omni-world-emblem" aria-hidden="true">
-            ${this.getWorldEmblemSVG(world.id)}
-          </div>
-          <span class="omni-world-genre">${this.escapeHTML(world.genre)}</span>
+      <div class="omni-world-card-head">
+        <div class="omni-world-emblem" aria-hidden="true">
+          ${this.getWorldEmblemSVG(world.id)}
         </div>
-        <h2 class="omni-world-title">${this.escapeHTML(world.title)}</h2>
-        <div class="omni-world-subtitle">${this.escapeHTML(world.subtitle)}</div>
-        <p class="omni-world-desc">${this.escapeHTML(world.description)}</p>
-        <div class="omni-world-features">${featuresHTML}</div>
+        <div class="omni-world-headings">
+          <h2 class="omni-world-title">${this.escapeHTML(world.title)}</h2>
+          <div class="omni-world-subtitle">${this.escapeHTML(world.subtitle)}</div>
+        </div>
+        <span class="omni-world-play-pill">JOUER →</span>
       </div>
-
-      <button type="button" class="omni-world-launch-btn">
-        <span>LANCER LE MONDE</span>
-        <span>→</span>
-      </button>
+      <p class="omni-world-desc">${this.escapeHTML(world.description)}</p>
+      <div class="omni-world-features">${featuresHTML}</div>
     `;
 
-    const triggerLaunch = (): void => {
+    card.addEventListener('click', () => {
       this.audio.unlock();
       this.audio.playUIClick();
       this.hasActiveWorld = true;
       this.showHub(false);
       this.onSelectWorld(world.id);
-    };
-
-    card.addEventListener('click', triggerLaunch);
+    });
     return card;
   }
 
+  private toggleHubDrawer(which: 'lobby' | 'settings'): void {
+    const isLobbyOpen = !this.lobbyDrawerEl.classList.contains('is-hidden');
+    const isSettingsOpen = !this.settingsDrawerEl.classList.contains('is-hidden');
+
+    if (which === 'lobby') {
+      const next = !isLobbyOpen;
+      this.lobbyDrawerEl.classList.toggle('is-hidden', !next);
+      this.settingsDrawerEl.classList.add('is-hidden');
+      this.toggleLobbyBtnEl.classList.toggle('is-active', next);
+      this.toggleSettingsBtnEl.classList.remove('is-active');
+    } else {
+      const next = !isSettingsOpen;
+      this.settingsDrawerEl.classList.toggle('is-hidden', !next);
+      this.lobbyDrawerEl.classList.add('is-hidden');
+      this.toggleSettingsBtnEl.classList.toggle('is-active', next);
+      this.toggleLobbyBtnEl.classList.remove('is-active');
+    }
+  }
+
+  private closeAllHubDrawers(): void {
+    this.lobbyDrawerEl.classList.add('is-hidden');
+    this.settingsDrawerEl.classList.add('is-hidden');
+    this.toggleLobbyBtnEl.classList.remove('is-active');
+    this.toggleSettingsBtnEl.classList.remove('is-active');
+  }
+
   private bindEvents(): void {
+    // Hub Slide-over Drawers
+    this.toggleLobbyBtnEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.audio.unlock();
+      this.audio.playUIClick();
+      this.toggleHubDrawer('lobby');
+    });
+
+    this.toggleSettingsBtnEl.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.audio.unlock();
+      this.audio.playUIClick();
+      this.toggleHubDrawer('settings');
+    });
+
+    this.mustQuery<HTMLButtonElement>(this.hubEl, '#omni-close-lobby-btn').addEventListener('click', () => {
+      this.audio.playUIClick();
+      this.closeAllHubDrawers();
+    });
+
+    this.mustQuery<HTMLButtonElement>(this.hubEl, '#omni-close-settings-btn').addEventListener('click', () => {
+      this.audio.playUIClick();
+      this.closeAllHubDrawers();
+    });
+
+    this.lobbyDrawerEl.addEventListener('click', (e) => e.stopPropagation());
+    this.settingsDrawerEl.addEventListener('click', (e) => e.stopPropagation());
+    this.hubEl.addEventListener('click', () => {
+      this.closeAllHubDrawers();
+    });
+
+    // HUD World Toolbar Collapse Toggle
+    this.toolbarToggleBtnEl.addEventListener('click', () => {
+      this.audio.playUIClick();
+      this.toolbarCollapsed = !this.toolbarCollapsed;
+      this.worldToolbarEl.classList.toggle('is-collapsed', this.toolbarCollapsed);
+      this.toolbarToggleBtnEl.textContent = this.toolbarCollapsed ? '▾' : '▴';
+    });
+
     // Player Name Input
     this.playerNameInputEl.value = this.network.playerName || 'Explorateur';
     this.playerNameInputEl.addEventListener('input', () => {
@@ -1279,10 +1342,11 @@ export class UIManager implements IUIManager {
       }
     });
 
-    // Room Code Input formatting (4 uppercase alphanumeric chars)
+    // Room Code Input
     const urlParams = new URLSearchParams(window.location.search);
     const urlRoom = this.sanitizeRoomCode(urlParams.get('room') ?? '');
-    const initialCode = this.sanitizeRoomCode(this.network.roomCode) || urlRoom || this.generateRandomRoomCode();
+    const initialCode =
+      this.sanitizeRoomCode(this.network.roomCode) || urlRoom || this.generateRandomRoomCode();
     this.roomCodeInputEl.value = initialCode;
 
     this.roomCodeInputEl.addEventListener('input', () => {
@@ -1298,7 +1362,7 @@ export class UIManager implements IUIManager {
       }
     });
 
-    // Create Random Room
+    // Create / Join / Leave Room
     const createBtn = this.mustQuery<HTMLButtonElement>(this.hubEl, '#omni-create-room-btn');
     createBtn.addEventListener('click', () => {
       this.audio.unlock();
@@ -1308,26 +1372,25 @@ export class UIManager implements IUIManager {
       void this.handleJoinRoom(randomCode);
     });
 
-    // Join Room
     const joinBtn = this.mustQuery<HTMLButtonElement>(this.hubEl, '#omni-join-room-btn');
     joinBtn.addEventListener('click', () => {
       this.audio.unlock();
       this.audio.playUIClick();
-      const targetCode = this.sanitizeRoomCode(this.roomCodeInputEl.value) || this.generateRandomRoomCode();
+      const targetCode =
+        this.sanitizeRoomCode(this.roomCodeInputEl.value) || this.generateRandomRoomCode();
       this.roomCodeInputEl.value = targetCode;
       void this.handleJoinRoom(targetCode);
     });
 
-    // Leave Room
     this.leaveRoomBtnEl.addEventListener('click', () => {
       this.audio.playUIClick();
       void this.network.leaveRoom().then(() => {
-        this.notify('Salon quitté', 'Passage en mode Solo local.', 'info');
+        this.notify('Salon quitté', 'Mode Solo local activé.', 'info');
         this.refreshLobbyUI();
       });
     });
 
-    // Direct Invite Copy (Hub & HUD)
+    // Direct Invite Copy
     this.inviteBtnEl.addEventListener('click', () => {
       this.audio.unlock();
       this.audio.playUIClick();
@@ -1339,7 +1402,6 @@ export class UIManager implements IUIManager {
       void this.copyDirectInviteLink();
     });
 
-    // Network Peers Listener + Gentle Ping Refresh while Hub is visible
     this.network.onPeersChanged(() => {
       this.refreshLobbyUI();
     });
@@ -1396,8 +1458,10 @@ export class UIManager implements IUIManager {
       '#omni-close-controls-btn'
     );
 
-    openControlsBtn.addEventListener('click', () => {
+    openControlsBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
       this.audio.playUIClick();
+      this.closeAllHubDrawers();
       this.setControlsModalOpen(true);
     });
 
@@ -1425,10 +1489,11 @@ export class UIManager implements IUIManager {
       this.showHub(true);
     });
 
-    // HUD Touch-Friendly Radial Trigger
+    // HUD Touch-Friendly Radial Trigger (latches cleanly across frames)
     const hudRadialBtn = this.mustQuery<HTMLButtonElement>(this.hudEl, '#omni-hud-radial-btn');
     hudRadialBtn.addEventListener('click', () => {
-      this.openRadialMenu(!this.radialOpen);
+      this.manualRadialLatch = !this.radialOpen;
+      this.applyRadialState(this.manualRadialLatch);
     });
 
     // PWA beforeinstallprompt Handler
@@ -1441,7 +1506,7 @@ export class UIManager implements IUIManager {
     window.addEventListener('appinstalled', () => {
       this.deferredInstallPrompt = null;
       this.pwaBtnEl.classList.add('is-hidden');
-      this.notify('Application installée', '3D GAMES : OMNIVERSE AAA est prêt sur votre appareil.', 'success');
+      this.notify('Application installée', 'Omniverse AAA prêt sur votre appareil.', 'success');
     });
 
     this.pwaBtnEl.addEventListener('click', () => {
@@ -1450,15 +1515,18 @@ export class UIManager implements IUIManager {
         return;
       }
       const promptEvent = this.deferredInstallPrompt;
-      void promptEvent.prompt().then(() => promptEvent.userChoice).then((choice) => {
-        if (choice.outcome === 'accepted') {
-          this.pwaBtnEl.classList.add('is-hidden');
-          this.deferredInstallPrompt = null;
-        }
-      });
+      void promptEvent
+        .prompt()
+        .then(() => promptEvent.userChoice)
+        .then((choice) => {
+          if (choice.outcome === 'accepted') {
+            this.pwaBtnEl.classList.add('is-hidden');
+            this.deferredInstallPrompt = null;
+          }
+        });
     });
 
-    // Global Keyboard Shortcuts (Escape -> Hub/Modal, Tab -> Slow-Motion Radial Wheel)
+    // Global Keyboard Shortcuts
     window.addEventListener('keydown', (e) => {
       if (this.isTypingInInput(e.target)) {
         if (e.key === 'Escape') {
@@ -1473,10 +1541,19 @@ export class UIManager implements IUIManager {
           this.setControlsModalOpen(false);
           return;
         }
+        if (
+          !this.lobbyDrawerEl.classList.contains('is-hidden') ||
+          !this.settingsDrawerEl.classList.contains('is-hidden')
+        ) {
+          e.preventDefault();
+          this.closeAllHubDrawers();
+          return;
+        }
         if (this.radialOpen) {
           e.preventDefault();
           this.hoveredRadialIndex = -1;
-          this.openRadialMenu(false);
+          this.manualRadialLatch = false;
+          this.applyRadialState(false);
           return;
         }
         if (!this.hubVisible) {
@@ -1495,7 +1572,8 @@ export class UIManager implements IUIManager {
       if (e.code === 'Tab' && !this.hubVisible) {
         e.preventDefault();
         if (!e.repeat) {
-          this.openRadialMenu(true);
+          this.inputRadialHeld = true;
+          this.applyRadialState(true);
         }
       }
     });
@@ -1503,18 +1581,20 @@ export class UIManager implements IUIManager {
     window.addEventListener('keyup', (e) => {
       if (e.code === 'Tab' && this.radialOpen) {
         e.preventDefault();
-        this.openRadialMenu(false);
+        this.inputRadialHeld = false;
+        this.manualRadialLatch = false;
+        this.applyRadialState(false);
       }
     });
 
-    // Radial Wheel Mouse & Touch Slice Selection (Supports both Pointer-Locked & Unlocked/Touch)
+    // Radial Wheel Mouse & Touch Slice Selection
     window.addEventListener('mousemove', (e) => {
       if (!this.radialOpen) {
         return;
       }
       if (document.pointerLockElement) {
-        this.radialVirtualX = Math.max(-140, Math.min(140, this.radialVirtualX + e.movementX));
-        this.radialVirtualY = Math.max(-140, Math.min(140, this.radialVirtualY + e.movementY));
+        this.radialVirtualX = Math.max(-110, Math.min(110, this.radialVirtualX + e.movementX));
+        this.radialVirtualY = Math.max(-110, Math.min(110, this.radialVirtualY + e.movementY));
         this.updateRadialSelectionFromOffset(this.radialVirtualX, this.radialVirtualY);
       } else {
         const rect = this.radialContainerEl.getBoundingClientRect();
@@ -1533,11 +1613,28 @@ export class UIManager implements IUIManager {
         this.radialCommitted = true;
         this.audio.playUIClick();
         this.onRadialSelect?.(item);
-        this.openRadialMenu(false);
+        this.manualRadialLatch = false;
+        this.applyRadialState(false);
       } else if (e.target === this.radialWheelEl) {
-        this.openRadialMenu(false);
+        this.manualRadialLatch = false;
+        this.applyRadialState(false);
       }
     });
+
+    this.radialWheelEl.addEventListener(
+      'touchstart',
+      (e) => {
+        if (!this.radialOpen || e.touches.length === 0) {
+          return;
+        }
+        const touch = e.touches[0];
+        const rect = this.radialContainerEl.getBoundingClientRect();
+        const dx = touch.clientX - (rect.left + rect.width * 0.5);
+        const dy = touch.clientY - (rect.top + rect.height * 0.5);
+        this.updateRadialSelectionFromOffset(dx, dy);
+      },
+      { passive: true }
+    );
 
     this.radialWheelEl.addEventListener(
       'touchmove',
@@ -1566,7 +1663,9 @@ export class UIManager implements IUIManager {
         const dy = touch.clientY - (rect.top + rect.height * 0.5);
         this.updateRadialSelectionFromOffset(dx, dy);
       }
-      this.openRadialMenu(false);
+      this.manualRadialLatch = false;
+      this.inputRadialHeld = false;
+      this.applyRadialState(false);
     });
   }
 
@@ -1577,22 +1676,22 @@ export class UIManager implements IUIManager {
   private async handleJoinRoom(rawCode: string): Promise<void> {
     const code = this.sanitizeRoomCode(rawCode);
     if (code.length < 2) {
-      this.notify('Code Salon invalide', 'Entrez un code de 4 caractères (ex: ABCD).', 'warning');
+      this.notify('Code Salon invalide', 'Entrez 4 caractères (ex: ABCD).', 'warning');
       return;
     }
 
-    this.netStatusPillEl.textContent = 'CONNEXION…';
+    this.netStatusPillEl.textContent = '…';
     try {
       await this.network.joinOrCreateRoom(code);
       this.roomCodeInputEl.value = this.network.roomCode || code;
       this.refreshLobbyUI();
       this.notify(
-        `Salon P2P ${this.network.roomCode || code}`,
-        'Synchronisation WebRTC serverless active.',
+        `Salon P2P #${this.network.roomCode || code}`,
+        'Synchronisation WebRTC active.',
         'success'
       );
     } catch {
-      this.notify('Connexion P2P', 'Impossible de joindre le relais, mode local maintenu.', 'warning');
+      this.notify('Connexion P2P', 'Mode local maintenu.', 'warning');
       this.refreshLobbyUI();
     }
   }
@@ -1600,12 +1699,13 @@ export class UIManager implements IUIManager {
   private async copyDirectInviteLink(): Promise<void> {
     let activeCode = this.sanitizeRoomCode(this.network.roomCode);
     if (!activeCode) {
-      activeCode = this.sanitizeRoomCode(this.roomCodeInputEl.value) || this.generateRandomRoomCode();
+      activeCode =
+        this.sanitizeRoomCode(this.roomCodeInputEl.value) || this.generateRandomRoomCode();
       this.roomCodeInputEl.value = activeCode;
       try {
         await this.network.joinOrCreateRoom(activeCode);
       } catch {
-        // Proceed with copying link even if signaling is still warming up
+        // Proceed with copying link
       }
       this.refreshLobbyUI();
     }
@@ -1644,8 +1744,8 @@ export class UIManager implements IUIManager {
 
     if (copied) {
       this.inviteBtnEl.classList.add('is-copied');
-      this.inviteBtnEl.innerHTML = '<span>✓ Copié ! Lien prêt à partager</span>';
-      this.hudInviteLabelEl.textContent = 'COPIÉ !';
+      this.inviteBtnEl.innerHTML = '<span>✓ Lien copié !</span>';
+      this.hudInviteLabelEl.textContent = 'COPIÉ';
       this.notify('Invitation copiée !', inviteUrl, 'success');
 
       if (this.inviteCopiedTimer !== null) {
@@ -1653,11 +1753,11 @@ export class UIManager implements IUIManager {
       }
       this.inviteCopiedTimer = window.setTimeout(() => {
         this.inviteBtnEl.classList.remove('is-copied');
-        this.inviteBtnEl.innerHTML = "<span>🔗 Copier le lien d'invitation directe</span>";
+        this.inviteBtnEl.innerHTML = "<span>🔗 Copier lien d'invitation</span>";
         this.hudInviteLabelEl.textContent = this.network.roomCode
-          ? `SALON ${this.network.roomCode}`
-          : 'INVITER';
-      }, 2200);
+          ? `#${this.network.roomCode}`
+          : 'P2P';
+      }, 2000);
     }
   }
 
@@ -1667,16 +1767,16 @@ export class UIManager implements IUIManager {
 
     if (activeRoom) {
       this.roomCodeInputEl.value = activeRoom;
-      this.netStatusPillEl.textContent = `EN LIGNE • ${activeRoom}`;
+      this.netStatusPillEl.textContent = `#${activeRoom}`;
       this.netStatusPillEl.classList.add('is-online');
       this.leaveRoomBtnEl.classList.remove('is-hidden');
-      this.hudInviteLabelEl.textContent = `SALON ${activeRoom}`;
+      this.hudInviteLabelEl.textContent = `#${activeRoom}`;
       this.updateInvitePreviewText(activeRoom);
     } else {
-      this.netStatusPillEl.textContent = 'SOLO PRÊT';
+      this.netStatusPillEl.textContent = 'SOLO';
       this.netStatusPillEl.classList.remove('is-online');
       this.leaveRoomBtnEl.classList.add('is-hidden');
-      this.hudInviteLabelEl.textContent = 'INVITER';
+      this.hudInviteLabelEl.textContent = 'P2P';
       this.updateInvitePreviewText(this.sanitizeRoomCode(this.roomCodeInputEl.value) || '----');
     }
 
@@ -1691,7 +1791,6 @@ export class UIManager implements IUIManager {
   private renderSquadList(peers: ConnectedPeerSummary[]): void {
     this.squadListEl.innerHTML = '';
 
-    // Local Player Row
     const selfRow = document.createElement('div');
     selfRow.className = 'omni-peer-row';
     const selfColor = this.network.playerColor || '#38e2ff';
@@ -1708,7 +1807,6 @@ export class UIManager implements IUIManager {
     `;
     this.squadListEl.appendChild(selfRow);
 
-    // Remote Connected Peers
     for (let i = 0; i < peers.length; i++) {
       const peer = peers[i];
       if (peer.peerId === this.network.selfPeerId) {
@@ -1777,7 +1875,10 @@ export class UIManager implements IUIManager {
 
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('class', 'omni-radial-slice');
-      path.setAttribute('d', this.describeAnnularSector(innerR, outerR, startAngle, endAngle, count === 1));
+      path.setAttribute(
+        'd',
+        this.describeAnnularSector(innerR, outerR, startAngle, endAngle, count === 1)
+      );
       this.radialSvgEl.appendChild(path);
       this.radialSliceEls.push(path);
 
@@ -1848,13 +1949,12 @@ export class UIManager implements IUIManager {
     }
 
     const dist = Math.hypot(dx, dy);
-    if (dist < 26) {
+    if (dist < 18) {
       this.setHoveredRadialSlice(-1);
       return;
     }
 
     const stepRad = (Math.PI * 2) / count;
-    // Normalize angle relative to -PI/2 (top slice 0 centered at 12 o'clock)
     let relAngle = Math.atan2(dy, dx) + Math.PI * 0.5 + stepRad * 0.5;
     while (relAngle < 0) {
       relAngle += Math.PI * 2;
@@ -1882,7 +1982,7 @@ export class UIManager implements IUIManager {
       this.radialCenterCatEl.textContent = RADIAL_CATEGORY_LABELS[item.category];
       this.radialCenterNameEl.textContent = item.label;
     } else {
-      this.radialCenterCatEl.textContent = 'ROUE RADIALE';
+      this.radialCenterCatEl.textContent = 'ROUE';
       this.radialCenterNameEl.textContent = 'Choisir';
     }
   }
@@ -1896,28 +1996,25 @@ export class UIManager implements IUIManager {
       case 'metropolis':
         return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <rect x="3" y="9" width="6" height="12"/><rect x="9" y="4" width="6" height="17"/><rect x="15" y="11" width="6" height="10"/>
-          <line x1="12" y1="8" x2="12" y2="8.01"/><line x1="12" y1="12" x2="12" y2="12.01"/><line x1="12" y1="16" x2="12" y2="16.01"/>
         </svg>`;
       case 'starfield':
         return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="5.5"/>
           <ellipse cx="12" cy="12" rx="10.5" ry="3.8" transform="rotate(-24 12 12)"/>
-          <circle cx="18.5" cy="5.5" r="1.2" fill="currentColor"/>
         </svg>`;
       case 'valheim':
         return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <polygon points="12,3 5,13 9,13 6,19 18,19 15,13 19,13"/>
-          <line x1="12" y1="19" x2="12" y2="22"/>
+          <polygon points="12,3 5,13 9,13 6,19 18,19 15,13 19,13"/><line x1="12" y1="19" x2="12" y2="22"/>
         </svg>`;
       case 'seaOfLegends':
         return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <path d="M12 3v12"/><path d="M12 4l7 9h-7"/><path d="M12 6l-5 7h5"/>
-          <path d="M3 16h18l-2.5 3.5H5.5L3 16z"/><path d="M2 21c2.5-1 4.5 1 7 0s4.5-1 7 0 3.5 1 6 0"/>
+          <path d="M3 16h18l-2.5 3.5H5.5L3 16z"/>
         </svg>`;
       case 'aetheria':
         return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="14.5,3.5 20.5,3.5 20.5,9.5 10.5,19.5 4.5,13.5"/>
-          <line x1="3.5" y1="20.5" x2="8.5" y2="15.5"/><line x1="6" y1="12" x2="12" y2="18"/>
+          <line x1="3.5" y1="20.5" x2="8.5" y2="15.5"/>
         </svg>`;
       case 'extremeHorizon':
         return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -1949,7 +2046,7 @@ export class UIManager implements IUIManager {
       case 'sword':
         return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 4l5.5 5.5-9.5 9.5H5v-5.5L14.5 4z"/><path d="M3 21l4-4"/></svg>`;
       case 'bow':
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4c9 2 13 6 15 15"/><line x1="5" y1="4" x2="20" y2="19"/><line x1="5" y1="19" x2="18" y2="6"/></svg>`;
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4c9 2 13 6 15 15"/><line x1="5" y1="4" x2="20" y2="19"/></svg>`;
       case 'laser':
         return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg>`;
       case 'axe':
@@ -1960,7 +2057,7 @@ export class UIManager implements IUIManager {
         return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2c2 4 6 6 6 11a6 6 0 1 1-12 0c0-3 2-5 3-7 0 2 2 3 3-4z"/></svg>`;
       case 'magic_ice':
       case 'ice':
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="5" y1="5" x2="19" y2="19"/><line x1="19" y1="5" x2="5" y2="19"/></svg>`;
+        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>`;
       case 'car':
       case 'moto':
       case 'truck4x4':
@@ -1969,9 +2066,6 @@ export class UIManager implements IUIManager {
       case 'jet':
       case 'starfighter':
         return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="21,3 14,21 10,14 3,10"/></svg>`;
-      case 'none':
-      case 'hand':
-        return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="7"/></svg>`;
       default:
         if (trimmed.length <= 4) {
           return `<span>${this.escapeHTML(trimmed)}</span>`;

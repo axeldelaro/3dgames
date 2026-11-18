@@ -170,6 +170,10 @@ export class InputManager implements IInputManager {
       this.bindKeyboardAndMouse();
       this.createTouchOverlay();
       this.refreshTouchOverlayVisibility();
+
+      window.addEventListener('omniverse:close-radial', () => {
+        this.touchRadialToggled = false;
+      });
     }
   }
 
@@ -388,67 +392,56 @@ export class InputManager implements IInputManager {
         }
         .omni-touch-swipe-right {
           position: absolute;
-          top: 14%;
+          top: 16%;
           right: 0;
-          width: 52%;
-          height: 86%;
+          width: 54%;
+          height: 84%;
           pointer-events: auto;
           touch-action: none;
         }
         .omni-stick-zone {
           position: absolute;
-          bottom: max(22px, env(safe-area-inset-bottom, 18px));
-          width: 136px;
-          height: 136px;
+          bottom: max(12px, env(safe-area-inset-bottom, 10px));
+          width: 90px;
+          height: 90px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(16, 28, 48, 0.52) 0%, rgba(7, 13, 25, 0.72) 100%);
-          border: 1.5px solid rgba(40, 224, 255, 0.36);
-          box-shadow: 0 0 24px rgba(0, 0, 0, 0.45), inset 0 0 16px rgba(40, 224, 255, 0.12);
+          background: radial-gradient(circle, rgba(12, 24, 42, 0.45) 0%, rgba(6, 12, 22, 0.68) 100%);
+          border: 1.3px solid rgba(56, 226, 255, 0.36);
+          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
           pointer-events: auto;
           touch-action: none;
-          backdrop-filter: blur(6px);
+          backdrop-filter: blur(5px);
+          opacity: 0.82;
         }
         .omni-stick-zone.left {
-          left: max(22px, env(safe-area-inset-left, 18px));
+          left: max(14px, env(safe-area-inset-left, 12px));
         }
         .omni-stick-zone.left.sprint-active {
           border-color: rgba(255, 190, 72, 0.9);
-          box-shadow: 0 0 26px rgba(255, 179, 71, 0.42);
-        }
-        .omni-stick-zone.right {
-          right: calc(max(22px, env(safe-area-inset-right, 18px)) + 156px);
-          width: 102px;
-          height: 102px;
-          opacity: 0.82;
+          box-shadow: 0 0 18px rgba(255, 179, 71, 0.38);
+          opacity: 1;
         }
         .omni-stick-knob {
           position: absolute;
           top: 50%;
           left: 50%;
-          width: 52px;
-          height: 52px;
-          margin-left: -26px;
-          margin-top: -26px;
+          width: 34px;
+          height: 34px;
+          margin-left: -17px;
+          margin-top: -17px;
           border-radius: 50%;
-          background: radial-gradient(circle at 35% 35%, rgba(92, 236, 255, 0.92), rgba(18, 128, 178, 0.85));
-          border: 1.5px solid rgba(255, 255, 255, 0.65);
-          box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+          background: radial-gradient(circle at 35% 35%, rgba(92, 236, 255, 0.9), rgba(18, 128, 178, 0.82));
+          border: 1.2px solid rgba(255, 255, 255, 0.65);
+          box-shadow: 0 3px 10px rgba(0, 0, 0, 0.45);
           pointer-events: none;
-          transition: transform 0.04s linear;
-        }
-        .omni-stick-zone.right .omni-stick-knob {
-          width: 38px;
-          height: 38px;
-          margin-left: -19px;
-          margin-top: -19px;
-          background: radial-gradient(circle at 35% 35%, rgba(200, 225, 255, 0.85), rgba(65, 95, 145, 0.82));
+          transition: transform 0.03s linear;
         }
         .omni-touch-actions {
           position: absolute;
-          right: max(18px, env(safe-area-inset-right, 16px));
-          bottom: max(20px, env(safe-area-inset-bottom, 16px));
-          width: 210px;
-          height: 230px;
+          right: max(10px, env(safe-area-inset-right, 8px));
+          bottom: max(10px, env(safe-area-inset-bottom, 8px));
+          width: 146px;
+          height: 136px;
           pointer-events: none;
         }
         .omni-touch-btn {
@@ -457,55 +450,61 @@ export class InputManager implements IInputManager {
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          gap: 2px;
-          width: 58px;
-          height: 58px;
+          gap: 1px;
+          width: 42px;
+          height: 42px;
+          padding: 0;
           border-radius: 50%;
-          background: rgba(10, 19, 36, 0.76);
-          border: 1.5px solid rgba(82, 224, 255, 0.48);
+          background: rgba(8, 17, 32, 0.74);
+          border: 1.2px solid rgba(82, 224, 255, 0.44);
           color: #eaf6ff;
-          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.42);
           pointer-events: auto;
           touch-action: none;
-          backdrop-filter: blur(6px);
+          backdrop-filter: blur(5px);
           transition: transform 0.08s ease, background 0.08s ease, border-color 0.08s ease;
         }
         .omni-touch-btn svg {
-          width: 23px;
-          height: 23px;
+          width: 16px;
+          height: 16px;
         }
         .omni-touch-btn span {
-          font-size: 9px;
+          font-size: 7.5px;
           font-weight: 700;
-          letter-spacing: 0.06em;
+          letter-spacing: 0.04em;
           text-transform: uppercase;
+          line-height: 1;
           opacity: 0.88;
         }
         .omni-touch-btn.primary {
-          width: 72px;
-          height: 72px;
-          border-color: rgba(40, 224, 255, 0.85);
-          background: radial-gradient(circle, rgba(24, 92, 132, 0.82), rgba(10, 22, 42, 0.88));
+          width: 52px;
+          height: 52px;
+          border-color: rgba(56, 226, 255, 0.85);
+          background: radial-gradient(circle, rgba(24, 92, 132, 0.8), rgba(10, 22, 42, 0.86));
+        }
+        .omni-touch-btn.primary svg {
+          width: 20px;
+          height: 20px;
         }
         .omni-touch-btn.pedal {
-          width: 60px;
-          height: 108px;
-          border-radius: 16px;
+          width: 40px;
+          height: 68px;
+          border-radius: 11px;
         }
         .omni-touch-btn.active {
-          transform: scale(0.93);
-          background: rgba(40, 224, 255, 0.34);
+          transform: scale(0.92);
+          background: rgba(56, 226, 255, 0.34);
           border-color: #ffffff;
         }
         .omni-throttle-slider {
           position: absolute;
-          right: 152px;
-          bottom: 112px;
-          width: 42px;
-          height: 138px;
-          border-radius: 21px;
-          background: rgba(9, 17, 32, 0.8);
-          border: 1.5px solid rgba(40, 224, 255, 0.45);
+          right: 112px;
+          bottom: 6px;
+          width: 26px;
+          height: 88px;
+          border-radius: 13px;
+          background: rgba(9, 17, 32, 0.78);
+          border: 1.2px solid rgba(56, 226, 255, 0.42);
           pointer-events: auto;
           touch-action: none;
           overflow: hidden;
@@ -516,29 +515,60 @@ export class InputManager implements IInputManager {
           right: 0;
           bottom: 0;
           height: 0%;
-          background: linear-gradient(180deg, rgba(40, 224, 255, 0.72), rgba(20, 110, 190, 0.45));
+          background: linear-gradient(180deg, rgba(56, 226, 255, 0.72), rgba(20, 110, 190, 0.45));
           pointer-events: none;
         }
         .omni-throttle-thumb {
           position: absolute;
-          left: 4px;
-          right: 4px;
-          bottom: 4px;
-          height: 18px;
-          border-radius: 9px;
+          left: 3px;
+          right: 3px;
+          bottom: 3px;
+          height: 12px;
+          border-radius: 6px;
           background: #eaf8ff;
-          box-shadow: 0 0 10px rgba(40, 224, 255, 0.9);
+          box-shadow: 0 0 8px rgba(56, 226, 255, 0.9);
           pointer-events: none;
         }
-        @media (max-width: 640px) {
+        @media (max-height: 520px), (max-width: 760px) {
           .omni-stick-zone {
-            width: 116px;
-            height: 116px;
+            width: 76px;
+            height: 76px;
+            bottom: max(8px, env(safe-area-inset-bottom, 6px));
           }
-          .omni-stick-zone.right {
-            width: 86px;
-            height: 86px;
-            right: calc(max(14px, env(safe-area-inset-right, 12px)) + 138px);
+          .omni-stick-knob {
+            width: 28px;
+            height: 28px;
+            margin-left: -14px;
+            margin-top: -14px;
+          }
+          .omni-touch-btn {
+            width: 37px;
+            height: 37px;
+          }
+          .omni-touch-btn svg {
+            width: 14px;
+            height: 14px;
+          }
+          .omni-touch-btn span {
+            font-size: 7px;
+          }
+          .omni-touch-btn.primary {
+            width: 46px;
+            height: 46px;
+          }
+          .omni-touch-btn.primary svg {
+            width: 18px;
+            height: 18px;
+          }
+          .omni-touch-btn.pedal {
+            width: 36px;
+            height: 58px;
+            border-radius: 9px;
+          }
+          .omni-throttle-slider {
+            right: 98px;
+            height: 76px;
+            width: 24px;
           }
         }
       `;
@@ -549,7 +579,7 @@ export class InputManager implements IInputManager {
     layer.className = 'omni-touch-layer';
     layer.style.display = 'none';
 
-    // Full right-half camera look swipe pad
+    // Full right-half camera look swipe pad (clean, unobstructed view)
     const rightSwipe = document.createElement('div');
     rightSwipe.className = 'omni-touch-swipe-right';
     this.bindSwipeLookZone(rightSwipe);
@@ -564,16 +594,7 @@ export class InputManager implements IInputManager {
     this.bindLeftThumbstick(leftStick, leftKnob);
     layer.appendChild(leftStick);
 
-    // Right dedicated camera look thumbstick
-    const rightStick = document.createElement('div');
-    rightStick.className = 'omni-stick-zone right';
-    const rightKnob = document.createElement('div');
-    rightKnob.className = 'omni-stick-knob';
-    rightStick.appendChild(rightKnob);
-    this.bindRightThumbstick(rightStick, rightKnob);
-    layer.appendChild(rightStick);
-
-    // Contextual SVG button cluster
+    // Compact contextual SVG button cluster
     const actionCluster = document.createElement('div');
     actionCluster.className = 'omni-touch-actions';
     layer.appendChild(actionCluster);
@@ -581,8 +602,8 @@ export class InputManager implements IInputManager {
     this.touchLayer = layer;
     this.leftStickZone = leftStick;
     this.leftStickKnob = leftKnob;
-    this.rightStickZone = rightStick;
-    this.rightStickKnob = rightKnob;
+    this.rightStickZone = null;
+    this.rightStickKnob = null;
     this.touchActionCluster = actionCluster;
 
     if (!this.uiRoot) {
@@ -595,7 +616,7 @@ export class InputManager implements IInputManager {
   }
 
   private bindLeftThumbstick(zone: HTMLDivElement, knob: HTMLDivElement): void {
-    const maxRadius = 52;
+    let maxRadius = 34;
 
     const updateFromTouch = (touch: Touch): void => {
       const dx = touch.clientX - this.leftOriginX;
@@ -630,6 +651,7 @@ export class InputManager implements IInputManager {
         const t = e.changedTouches[0];
         if (!t) return;
         const rect = zone.getBoundingClientRect();
+        maxRadius = Math.max(24, rect.width * 0.38);
         this.leftTouchId = t.identifier;
         this.leftOriginX = rect.left + rect.width * 0.5;
         this.leftOriginY = rect.top + rect.height * 0.5;
@@ -662,77 +684,6 @@ export class InputManager implements IInputManager {
           this.touchAutoSprint = false;
           knob.style.transform = 'translate3d(0, 0, 0)';
           zone.classList.remove('sprint-active');
-          break;
-        }
-      }
-    };
-
-    zone.addEventListener('touchend', release, { passive: true });
-    zone.addEventListener('touchcancel', release, { passive: true });
-  }
-
-  private bindRightThumbstick(zone: HTMLDivElement, knob: HTMLDivElement): void {
-    const maxRadius = 38;
-
-    const updateStick = (touch: Touch): void => {
-      const dx = touch.clientX - this.rightStickOriginX;
-      const dy = touch.clientY - this.rightStickOriginY;
-      const dist = Math.hypot(dx, dy);
-      const clamped = Math.min(maxRadius, dist);
-      const angle = Math.atan2(dy, dx);
-      knob.style.transform = `translate3d(${(Math.cos(angle) * clamped).toFixed(1)}px, ${(Math.sin(angle) * clamped).toFixed(1)}px, 0)`;
-
-      const norm = Math.min(1, dist / maxRadius);
-      if (norm < 0.12) {
-        this.rightStickRateX = 0;
-        this.rightStickRateY = 0;
-      } else {
-        const curved = Math.pow((norm - 0.12) / 0.88, 1.6);
-        this.rightStickRateX = Math.cos(angle) * curved;
-        this.rightStickRateY = Math.sin(angle) * curved;
-      }
-    };
-
-    zone.addEventListener(
-      'touchstart',
-      (e: TouchEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (this.rightStickTouchId !== null) return;
-        const t = e.changedTouches[0];
-        if (!t) return;
-        const rect = zone.getBoundingClientRect();
-        this.rightStickTouchId = t.identifier;
-        this.rightStickOriginX = rect.left + rect.width * 0.5;
-        this.rightStickOriginY = rect.top + rect.height * 0.5;
-        updateStick(t);
-      },
-      { passive: false }
-    );
-
-    zone.addEventListener(
-      'touchmove',
-      (e: TouchEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        for (let i = 0; i < e.changedTouches.length; i++) {
-          const t = e.changedTouches[i];
-          if (t.identifier === this.rightStickTouchId) {
-            updateStick(t);
-            break;
-          }
-        }
-      },
-      { passive: false }
-    );
-
-    const release = (e: TouchEvent): void => {
-      for (let i = 0; i < e.changedTouches.length; i++) {
-        if (e.changedTouches[i].identifier === this.rightStickTouchId) {
-          this.rightStickTouchId = null;
-          this.rightStickRateX = 0;
-          this.rightStickRateY = 0;
-          knob.style.transform = 'translate3d(0, 0, 0)';
           break;
         }
       }
@@ -918,8 +869,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Action',
           svg: SVG_ICONS.attack,
-          rightPx: 8,
-          bottomPx: 8,
+          rightPx: 2,
+          bottomPx: 2,
           extraClass: 'primary',
           onPress: () => {
             this.touchPrimaryHeld = true;
@@ -935,8 +886,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Saut',
           svg: SVG_ICONS.jump,
-          rightPx: 92,
-          bottomPx: 14,
+          rightPx: 60,
+          bottomPx: 4,
           onPress: () => {
             this.touchJumpHeld = true;
             this.pendingJump = true;
@@ -949,10 +900,10 @@ export class InputManager implements IInputManager {
 
       cluster.appendChild(
         this.createTouchButton({
-          label: 'Roulade',
+          label: 'Sprint',
           svg: SVG_ICONS.sprint,
-          rightPx: 88,
-          bottomPx: 84,
+          rightPx: 54,
+          bottomPx: 52,
           onPress: () => {
             this.touchSprintHeld = true;
             this.touchCrouchHeld = true;
@@ -966,10 +917,10 @@ export class InputManager implements IInputManager {
 
       cluster.appendChild(
         this.createTouchButton({
-          label: 'Interagir',
+          label: 'Activer',
           svg: SVG_ICONS.interact,
-          rightPx: 14,
-          bottomPx: 94,
+          rightPx: 4,
+          bottomPx: 60,
           onPress: () => {
             this.pendingInteract = true;
           }
@@ -980,8 +931,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Roue',
           svg: SVG_ICONS.radial,
-          rightPx: 14,
-          bottomPx: 162,
+          rightPx: 106,
+          bottomPx: 4,
           onPress: () => {
             this.touchRadialToggled = !this.touchRadialToggled;
           }
@@ -995,8 +946,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Gaz',
           svg: SVG_ICONS.pedalGas,
-          rightPx: 6,
-          bottomPx: 8,
+          rightPx: 2,
+          bottomPx: 2,
           extraClass: 'pedal primary',
           onPress: () => {
             this.touchGasPedal = 1;
@@ -1014,8 +965,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Frein',
           svg: SVG_ICONS.pedalBrake,
-          rightPx: 76,
-          bottomPx: 8,
+          rightPx: 48,
+          bottomPx: 2,
           extraClass: 'pedal',
           onPress: () => {
             this.touchBrakePedal = 1;
@@ -1033,8 +984,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Drift',
           svg: SVG_ICONS.drift,
-          rightPx: 76,
-          bottomPx: 126,
+          rightPx: 94,
+          bottomPx: 4,
           onPress: () => {
             this.touchHandbrakeHeld = true;
           },
@@ -1048,8 +999,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Klaxon',
           svg: SVG_ICONS.horn,
-          rightPx: 8,
-          bottomPx: 126,
+          rightPx: 48,
+          bottomPx: 76,
           onPress: () => {
             this.pendingHorn = true;
           }
@@ -1060,8 +1011,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Sortir',
           svg: SVG_ICONS.exit,
-          rightPx: 8,
-          bottomPx: 192,
+          rightPx: 2,
+          bottomPx: 76,
           onPress: () => {
             this.pendingInteract = true;
           }
@@ -1071,9 +1022,10 @@ export class InputManager implements IInputManager {
     }
 
     if (this.contextMode === 'FLIGHT_SPACE') {
-      // Vertical continuous throttle slider
       const slider = document.createElement('div');
       slider.className = 'omni-throttle-slider';
+      slider.style.right = '106px';
+      slider.style.bottom = '4px';
       const fill = document.createElement('div');
       fill.className = 'omni-throttle-fill';
       const thumb = document.createElement('div');
@@ -1137,8 +1089,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Tir',
           svg: SVG_ICONS.laser,
-          rightPx: 8,
-          bottomPx: 8,
+          rightPx: 2,
+          bottomPx: 2,
           extraClass: 'primary',
           onPress: () => {
             this.touchPrimaryHeld = true;
@@ -1154,8 +1106,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Boost',
           svg: SVG_ICONS.warp,
-          rightPx: 88,
-          bottomPx: 18,
+          rightPx: 58,
+          bottomPx: 6,
           onPress: () => {
             this.touchSprintHeld = true;
             this.touchJumpHeld = true;
@@ -1172,8 +1124,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Mode',
           svg: SVG_ICONS.switchMode,
-          rightPx: 8,
-          bottomPx: 92,
+          rightPx: 56,
+          bottomPx: 54,
           onPress: () => {
             this.pendingSwitchMode = true;
           }
@@ -1184,8 +1136,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Sortir',
           svg: SVG_ICONS.exit,
-          rightPx: 8,
-          bottomPx: 160,
+          rightPx: 4,
+          bottomPx: 60,
           onPress: () => {
             this.pendingInteract = true;
           }
@@ -1199,8 +1151,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Canons',
           svg: SVG_ICONS.cannon,
-          rightPx: 8,
-          bottomPx: 8,
+          rightPx: 2,
+          bottomPx: 2,
           extraClass: 'primary',
           onPress: () => {
             this.touchPrimaryHeld = true;
@@ -1216,8 +1168,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Voile -',
           svg: SVG_ICONS.sailMinus,
-          rightPx: 90,
-          bottomPx: 12,
+          rightPx: 60,
+          bottomPx: 4,
           onPress: () => {
             this.touchRollMinus = true;
           },
@@ -1231,8 +1183,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Voile +',
           svg: SVG_ICONS.sailPlus,
-          rightPx: 90,
-          bottomPx: 80,
+          rightPx: 54,
+          bottomPx: 52,
           onPress: () => {
             this.touchRollPlus = true;
           },
@@ -1246,8 +1198,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Ancre',
           svg: SVG_ICONS.anchor,
-          rightPx: 12,
-          bottomPx: 92,
+          rightPx: 106,
+          bottomPx: 4,
           onPress: () => {
             this.touchHandbrakeHeld = true;
             this.touchCrouchHeld = true;
@@ -1263,8 +1215,8 @@ export class InputManager implements IInputManager {
         this.createTouchButton({
           label: 'Quitter',
           svg: SVG_ICONS.exit,
-          rightPx: 12,
-          bottomPx: 160,
+          rightPx: 4,
+          bottomPx: 60,
           onPress: () => {
             this.pendingInteract = true;
           }
@@ -1278,8 +1230,7 @@ export class InputManager implements IInputManager {
       this.throttleFillEl.style.height = `${(ratio * 100).toFixed(1)}%`;
     }
     if (this.throttleThumbEl) {
-      const bottomPx = 4 + ratio * 112;
-      this.throttleThumbEl.style.bottom = `${bottomPx.toFixed(1)}px`;
+      this.throttleThumbEl.style.bottom = `calc(${(ratio * 82).toFixed(1)}% + 2px)`;
     }
   }
 

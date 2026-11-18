@@ -1623,20 +1623,20 @@ export class AetheriaWorld implements WorldInterface {
 
   private renderToolbar(): void {
     const btnStyle = (active: boolean) =>
-      `padding:6px 11px;border-radius:999px;border:1px solid ${
+      `border:1px solid ${
         active ? '#ffd166' : 'rgba(255,255,255,0.18)'
       };background:${
-        active ? 'rgba(255,209,102,0.24)' : 'rgba(12,18,32,0.72)'
-      };color:${active ? '#ffe9a8' : '#e8eef7'};font-size:12px;font-weight:600;cursor:pointer;backdrop-filter:blur(8px);`;
+        active ? 'rgba(255,209,102,0.24)' : 'rgba(12,18,32,0.76)'
+      };color:${active ? '#ffe9a8' : '#e8eef7'};cursor:pointer;`;
 
     const html = `
-      <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">
-        <button data-wpn="sword" style="${btnStyle(this.equippedWeapon === 'sword')}">1 ⚔️ Lame d’Aether</button>
-        <button data-wpn="bow" style="${btnStyle(this.equippedWeapon === 'bow')}">2 🏹 Arc Énergétique</button>
-        <button data-wpn="magic_fire" style="${btnStyle(this.equippedWeapon === 'magic_fire')}">3 🔥 Pyro (Thermique)</button>
-        <button data-wpn="magic_ice" style="${btnStyle(this.equippedWeapon === 'magic_ice')}">4 ❄️ Cryo (Glace)</button>
-        <button data-tp="sky" style="${btnStyle(false)}">🏛️ Île Céleste</button>
-        <button data-tp="lake" style="${btnStyle(false)}">🌊 Lac & Cascade</button>
+      <div>
+        <button data-wpn="sword" style="${btnStyle(this.equippedWeapon === 'sword')}">⚔️ Lame</button>
+        <button data-wpn="bow" style="${btnStyle(this.equippedWeapon === 'bow')}">🏹 Arc</button>
+        <button data-wpn="magic_fire" style="${btnStyle(this.equippedWeapon === 'magic_fire')}">🔥 Pyro</button>
+        <button data-wpn="magic_ice" style="${btnStyle(this.equippedWeapon === 'magic_ice')}">❄️ Cryo</button>
+        <button data-tp="sky" style="${btnStyle(false)}">🏛️ Île</button>
+        <button data-tp="lake" style="${btnStyle(false)}">🌊 Lac</button>
       </div>
     `;
 

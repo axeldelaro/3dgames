@@ -1,97 +1,88 @@
-/* ==========================================================================
-   3D GAMES : OMNIVERSE AAA — "CYBER-GLASS AAA" DESIGN SYSTEM & HUD STYLESHEET
-   Palette: Smoked Obsidian Glass • Luminous Ice-Cyan • Solar-Amber • Bio-Mint
-   Zero Purple / Zero Violet Accents • 4K Desktop to Android Landscape Ready
-   ========================================================================== */
+/* ============================================================================
+   3D GAMES : OMNIVERSE AAA — COMPACT CYBER-GLASS UI/UX DESIGN SYSTEM (v2)
+   Zero-Overlap Responsive Architecture (Android Landscape/Portrait + PC AAA)
+   Strictly Zero Purple / Zero Violet — Obsidian, Ice Cyan, Solar Amber & Mint
+   ============================================================================ */
 
 :root {
-  /* Core Surfaces */
-  --bg-void: #05080f;
-  --glass-obsidian: rgba(7, 13, 24, 0.72);
-  --glass-obsidian-strong: rgba(5, 10, 19, 0.88);
-  --glass-obsidian-soft: rgba(9, 17, 31, 0.56);
-  --glass-elevated: rgba(13, 24, 42, 0.78);
-  --glass-blur: blur(20px) saturate(165%);
+  --omni-bg-void: #030710;
+  --omni-glass-bg: rgba(6, 13, 24, 0.76);
+  --omni-glass-strong: rgba(5, 11, 20, 0.9);
+  --omni-glass-card: rgba(8, 17, 31, 0.72);
+  --omni-glass-card-hover: rgba(12, 26, 46, 0.88);
 
-  /* Cyber-Glass Luminous Accents (Strictly Zero Purple/Violet) */
-  --cyan: #38e2ff;
-  --cyan-bright: #7ceeff;
-  --cyan-border: rgba(56, 226, 255, 0.28);
-  --cyan-border-strong: rgba(56, 226, 255, 0.62);
-  --cyan-glow: rgba(56, 226, 255, 0.22);
-  --cyan-subtle: rgba(56, 226, 255, 0.1);
+  --omni-border-subtle: rgba(130, 214, 255, 0.16);
+  --omni-border-cyan: rgba(56, 226, 255, 0.42);
+  --omni-border-amber: rgba(255, 179, 71, 0.48);
 
-  --amber: #ffb347;
-  --amber-bright: #ffd166;
-  --amber-border: rgba(255, 179, 71, 0.42);
-  --amber-glow: rgba(255, 179, 71, 0.25);
-  --amber-subtle: rgba(255, 179, 71, 0.12);
+  --omni-cyan: #38e2ff;
+  --omni-cyan-bright: #84f1ff;
+  --omni-teal: #19d4c6;
+  --omni-amber: #ffb347;
+  --omni-mint: #66f2a5;
+  --omni-coral: #ff5e57;
 
-  --mint: #66f2a5;
-  --mint-glow: rgba(102, 242, 165, 0.24);
-  --teal: #19d4c6;
-  --danger: #ff5e57;
-  --danger-glow: rgba(255, 94, 87, 0.32);
+  --omni-text-primary: #eef6ff;
+  --omni-text-secondary: #9bb6d4;
+  --omni-text-muted: #647f9e;
 
-  /* Typography */
-  --text-primary: #eef6ff;
-  --text-secondary: rgba(206, 227, 248, 0.8);
-  --text-muted: rgba(142, 173, 206, 0.6);
+  --omni-font-display: 'Orbitron', system-ui, -apple-system, sans-serif;
+  --omni-font-tactical: 'Rajdhani', system-ui, -apple-system, sans-serif;
+  --omni-font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 
-  --font-display: 'Orbitron', system-ui, sans-serif;
-  --font-tech: 'Rajdhani', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --omni-blur: blur(14px) saturate(135%);
+  --omni-shadow-sm: 0 6px 20px rgba(0, 0, 0, 0.45);
+  --omni-shadow-lg: 0 14px 36px rgba(0, 0, 0, 0.68);
 
-  /* Motion & Geometry */
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-snappy: cubic-bezier(0.22, 1, 0.36, 1);
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-pill: 999px;
-
-  /* Safe-Area Insets for Notched Mobile / Capacitor Android */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
 }
 
-/* ==========================================================================
-   1. COMPLETE CSS RESET & VIEWPORT LOCK
-   ========================================================================== */
-
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
-body,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--omni-bg-void);
+  color: var(--omni-text-primary);
+  font-family: var(--omni-font-sans);
+  font-size: 13px;
+  line-height: 1.3;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+  -webkit-user-select: none;
+  overscroll-behavior: none;
+}
+
+input,
+select,
+textarea {
+  user-select: text;
+  -webkit-user-select: text;
+  font-family: inherit;
+}
+
 #omniverse-app {
+  position: fixed;
+  inset: 0;
   width: 100vw;
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  background-color: var(--bg-void);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 14px;
-  line-height: 1.4;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-tap-highlight-color: transparent;
-  overscroll-behavior: none;
-}
-
-#omniverse-app {
-  position: relative;
-  isolation: isolate;
 }
 
 #omniverse-canvas {
@@ -110,1198 +101,872 @@ body,
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 40;
+  z-index: 10;
   pointer-events: none;
-}
-
-button,
-input,
-select {
-  font: inherit;
-  color: inherit;
-  background: none;
-  border: none;
-  outline: none;
-}
-
-button {
-  cursor: pointer;
-  touch-action: manipulation;
-}
-
-input[type='text'],
-input[type='search'],
-input[type='number'] {
-  user-select: text;
-  -webkit-user-select: text;
-  touch-action: manipulation;
-}
-
-a {
-  color: inherit;
-  text-decoration: none;
+  overflow: hidden;
 }
 
 .is-hidden {
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
+  display: none !important;
 }
 
-/* Custom Cyber Scrollbar */
+/* Custom Slim Scrollbars */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
-
 ::-webkit-scrollbar-track {
-  background: rgba(5, 10, 19, 0.45);
+  background: rgba(3, 8, 16, 0.35);
 }
-
 ::-webkit-scrollbar-thumb {
-  background: rgba(56, 226, 255, 0.34);
-  border-radius: var(--radius-pill);
+  background: rgba(56, 226, 255, 0.32);
+  border-radius: 999px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(56, 226, 255, 0.65);
-}
-
-/* ==========================================================================
-   2. CINEMATIC MAIN HUB (#omniverse-hub)
-   ========================================================================== */
+/* ============================================================================
+   1. COMPACT MAIN HUB (#omniverse-hub) — 100% SINGLE-SCREEN FIT
+   ============================================================================ */
 
 #omniverse-hub {
   position: fixed;
   inset: 0;
-  z-index: 80;
+  z-index: 30;
   pointer-events: auto;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 14px;
-  padding: calc(16px + var(--safe-top)) calc(22px + var(--safe-right))
-    calc(16px + var(--safe-bottom)) calc(22px + var(--safe-left));
+  gap: 8px;
+  padding:
+    max(8px, var(--safe-top))
+    max(12px, var(--safe-right))
+    max(8px, var(--safe-bottom))
+    max(12px, var(--safe-left));
   background:
-    radial-gradient(circle at 18% 12%, rgba(56, 226, 255, 0.11) 0%, transparent 46%),
-    radial-gradient(circle at 85% 88%, rgba(255, 179, 71, 0.08) 0%, transparent 44%),
-    linear-gradient(180deg, rgba(4, 9, 18, 0.78) 0%, rgba(5, 10, 19, 0.64) 50%, rgba(4, 8, 16, 0.86) 100%);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  overflow-y: auto;
-  overflow-x: hidden;
-  touch-action: pan-y;
-  overscroll-behavior: contain;
-  transition:
-    opacity 0.32s var(--ease-out-expo),
-    transform 0.32s var(--ease-out-expo),
-    visibility 0.32s;
+    radial-gradient(circle at 50% 0%, rgba(56, 226, 255, 0.08), transparent 48%),
+    linear-gradient(180deg, rgba(3, 8, 16, 0.56) 0%, rgba(3, 8, 16, 0.14) 48%, rgba(3, 8, 16, 0.58) 100%);
+  overflow: hidden;
 }
 
-#omniverse-hub.is-hidden {
-  transform: scale(1.018);
-}
-
-/* Top Header */
+/* Slim Single-Row Header */
 .omni-hub-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 14px;
-  padding: 12px 18px;
-  background: var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--cyan-border);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    0 14px 38px rgba(0, 0, 0, 0.48),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  gap: 8px;
+  min-height: 38px;
+  padding: 4px 10px;
+  background: var(--omni-glass-bg);
+  backdrop-filter: var(--omni-blur);
+  -webkit-backdrop-filter: var(--omni-blur);
+  border: 1px solid var(--omni-border-subtle);
+  border-radius: 10px;
+  box-shadow: var(--omni-shadow-sm);
   flex-shrink: 0;
 }
 
 .omni-brand-cluster {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
   min-width: 0;
+  flex-shrink: 1;
 }
 
 .omni-brand-emblem {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(56, 226, 255, 0.1);
+  border: 1px solid var(--omni-border-cyan);
   display: grid;
   place-items: center;
-  border-radius: 11px;
-  background: linear-gradient(135deg, rgba(56, 226, 255, 0.18), rgba(255, 179, 71, 0.12));
-  border: 1px solid var(--cyan-border-strong);
-  box-shadow: 0 0 22px var(--cyan-glow);
+  flex-shrink: 0;
 }
 
 .omni-brand-emblem svg {
-  width: 28px;
-  height: 28px;
-}
-
-.omni-brand-titles {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
+  width: 15px;
+  height: 15px;
 }
 
 .omni-brand-title-row {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
+  gap: 7px;
+  min-width: 0;
 }
 
 .omni-brand-title {
-  font-family: var(--font-display);
-  font-size: clamp(1rem, 1.55vw, 1.42rem);
+  margin: 0;
+  font-family: var(--omni-font-display);
+  font-size: 12.5px;
   font-weight: 800;
-  letter-spacing: 0.09em;
-  color: var(--text-primary);
-  text-shadow: 0 0 18px rgba(56, 226, 255, 0.32);
+  letter-spacing: 0.06em;
+  color: var(--omni-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .omni-brand-title span {
-  color: var(--cyan);
+  color: var(--omni-cyan);
 }
 
 .omni-engine-badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 2px 10px;
-  border-radius: var(--radius-pill);
-  background: rgba(56, 226, 255, 0.1);
-  border: 1px solid rgba(56, 226, 255, 0.35);
-  font-family: var(--font-tech);
-  font-size: 0.76rem;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  font-family: var(--omni-font-tactical);
+  font-size: 9.5px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--cyan-bright);
+  letter-spacing: 0.06em;
+  color: var(--omni-cyan-bright);
+  background: rgba(56, 226, 255, 0.1);
+  border: 1px solid rgba(56, 226, 255, 0.28);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .omni-pulse-dot {
-  width: 7px;
-  height: 7px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: var(--mint);
-  box-shadow: 0 0 10px var(--mint);
-  animation: omniPulse 2.2s infinite ease-in-out;
-}
-
-.omni-brand-subtitle {
-  font-family: var(--font-tech);
-  font-size: 0.86rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
+  background: var(--omni-mint);
+  box-shadow: 0 0 6px var(--omni-mint);
 }
 
 .omni-header-actions {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
 }
 
-/* Prominent Android APK Action Button */
+.omni-header-actions::-webkit-scrollbar {
+  display: none;
+}
+
+/* Header Compact Action Pills */
+.omni-hdr-btn,
+.omni-resume-btn,
+.omni-pwa-btn,
 .omni-apk-btn {
-  position: relative;
-  overflow: hidden;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 18px;
-  border-radius: var(--radius-md);
-  background: linear-gradient(
-    135deg,
-    rgba(255, 179, 71, 0.24) 0%,
-    rgba(255, 209, 102, 0.14) 48%,
-    rgba(56, 226, 255, 0.2) 100%
-  );
-  border: 1px solid rgba(255, 193, 94, 0.68);
-  box-shadow:
-    0 6px 24px rgba(255, 179, 71, 0.22),
-    0 0 16px rgba(56, 226, 255, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.24);
-  font-family: var(--font-tech);
-  font-size: 0.96rem;
+  gap: 5px;
+  height: 27px;
+  padding: 0 9px;
+  border-radius: 7px;
+  font-family: var(--omni-font-tactical);
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.03em;
-  color: #fff8eb;
-  transition:
-    transform 0.2s var(--ease-snappy),
-    box-shadow 0.2s var(--ease-snappy),
-    border-color 0.2s var(--ease-snappy);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid var(--omni-border-subtle);
+  background: rgba(12, 24, 42, 0.8);
+  color: var(--omni-text-primary);
+  transition: background 0.14s ease, border-color 0.14s ease, transform 0.12s ease;
+  flex-shrink: 0;
 }
 
-.omni-apk-btn::after {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -35%;
-  width: 32%;
-  height: 200%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.26),
-    transparent
-  );
-  transform: rotate(24deg);
-  animation: omniSheen 4.8s infinite ease-in-out;
-  pointer-events: none;
-}
-
+.omni-hdr-btn:hover,
+.omni-resume-btn:hover,
+.omni-pwa-btn:hover,
 .omni-apk-btn:hover {
-  transform: translateY(-2px);
-  border-color: var(--amber-bright);
-  box-shadow:
-    0 10px 28px rgba(255, 179, 71, 0.36),
-    0 0 22px rgba(56, 226, 255, 0.26),
-    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  border-color: var(--omni-border-cyan);
+  background: rgba(56, 226, 255, 0.16);
 }
 
-.omni-apk-btn:active {
-  transform: translateY(0);
+.omni-hdr-btn.is-active {
+  border-color: var(--omni-cyan);
+  background: rgba(56, 226, 255, 0.22);
+  color: var(--omni-cyan-bright);
+}
+
+.omni-resume-btn {
+  border-color: rgba(102, 242, 165, 0.55);
+  background: rgba(102, 242, 165, 0.16);
+  color: var(--omni-mint);
+}
+
+.omni-pwa-btn {
+  border-color: var(--omni-border-cyan);
+  color: var(--omni-cyan-bright);
+}
+
+.omni-apk-btn {
+  border-color: var(--omni-border-amber);
+  background: linear-gradient(135deg, rgba(255, 179, 71, 0.2), rgba(255, 126, 71, 0.12));
+  color: #ffe2b3;
 }
 
 .omni-apk-btn svg {
-  width: 19px;
-  height: 19px;
+  width: 13px;
+  height: 13px;
+  color: var(--omni-amber);
   flex-shrink: 0;
-  color: var(--amber-bright);
 }
 
-/* Optional PWA Install Button & Resume Button */
-.omni-pwa-btn,
-.omni-resume-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 15px;
-  border-radius: var(--radius-md);
-  background: rgba(56, 226, 255, 0.14);
-  border: 1px solid var(--cyan-border-strong);
-  box-shadow: 0 4px 18px var(--cyan-glow);
-  font-family: var(--font-tech);
-  font-size: 0.92rem;
+.omni-net-status-pill {
+  padding: 1px 5px;
+  border-radius: 999px;
+  font-size: 9.5px;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--cyan-bright);
-  transition:
-    transform 0.2s var(--ease-snappy),
-    background 0.2s,
-    box-shadow 0.2s;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--omni-text-secondary);
 }
 
-.omni-pwa-btn:hover,
-.omni-resume-btn:hover {
-  transform: translateY(-1px);
-  background: rgba(56, 226, 255, 0.24);
-  box-shadow: 0 8px 24px rgba(56, 226, 255, 0.32);
+.omni-net-status-pill.is-online {
+  background: rgba(102, 242, 165, 0.2);
+  color: var(--omni-mint);
 }
 
-.omni-resume-btn {
-  background: rgba(102, 242, 165, 0.15);
-  border-color: rgba(102, 242, 165, 0.52);
-  color: var(--mint);
-  box-shadow: 0 4px 18px var(--mint-glow);
-}
+/* ============================================================================
+   SLIDE-OVER POPOVER DRAWERS (P2P LOBBY & OPTIONS) — CLOSED BY DEFAULT
+   ============================================================================ */
 
-.omni-resume-btn:hover {
-  background: rgba(102, 242, 165, 0.26);
-}
-
-/* Main 2-Column Hub Grid */
-.omni-hub-grid {
-  display: grid;
-  grid-template-columns: 336px minmax(0, 1fr);
-  gap: 16px;
-  flex: 1 1 auto;
-  min-height: 0;
-  align-items: stretch;
-}
-
-/* ==========================================================================
-   2B. WEBRTC P2P SERVERLESS LOBBY PANEL
-   ========================================================================== */
-
-.omni-lobby-panel {
+.omni-hub-drawer {
+  position: fixed;
+  top: calc(max(8px, var(--safe-top)) + 44px);
+  right: max(12px, var(--safe-right));
+  width: min(306px, calc(100vw - 24px));
+  max-height: calc(100dvh - max(8px, var(--safe-top)) - max(8px, var(--safe-bottom)) - 52px);
+  overflow-y: auto;
+  z-index: 65;
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
-  background: var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--cyan-border);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    0 14px 36px rgba(0, 0, 0, 0.44),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  min-height: 0;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--omni-glass-strong);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  border: 1px solid var(--omni-border-cyan);
+  border-radius: 12px;
+  box-shadow: var(--omni-shadow-lg);
+  pointer-events: auto;
+  animation: omniDrawerIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes omniDrawerIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .omni-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding-bottom: 8px;
-  border-bottom: 1px solid rgba(56, 226, 255, 0.14);
+  gap: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(130, 214, 255, 0.12);
 }
 
 .omni-panel-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-family: var(--font-display);
-  font-size: 0.82rem;
+  gap: 6px;
+  font-family: var(--omni-font-display);
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--cyan-bright);
+  color: var(--omni-cyan-bright);
 }
 
 .omni-panel-title svg {
-  width: 16px;
-  height: 16px;
-  color: var(--cyan);
+  width: 14px;
+  height: 14px;
+  color: var(--omni-cyan);
 }
 
-.omni-net-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 9px;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.05);
+.omni-drawer-close-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
   border: 1px solid rgba(255, 255, 255, 0.14);
-  font-family: var(--font-tech);
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--omni-text-secondary);
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
 }
 
-.omni-net-status-pill.is-online {
-  background: rgba(102, 242, 165, 0.12);
-  border-color: rgba(102, 242, 165, 0.45);
-  color: var(--mint);
+.omni-drawer-close-btn:hover {
+  color: #ffffff;
+  border-color: var(--omni-cyan);
 }
 
 .omni-field-group {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 4px;
 }
 
 .omni-field-label {
-  font-family: var(--font-tech);
-  font-size: 0.78rem;
+  font-family: var(--omni-font-tactical);
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--omni-text-secondary);
 }
 
 .omni-input {
   width: 100%;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  background: rgba(4, 9, 18, 0.76);
-  border: 1px solid rgba(56, 226, 255, 0.24);
-  color: var(--text-primary);
-  font-family: var(--font-body);
-  font-size: 0.9rem;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: rgba(3, 8, 16, 0.72);
+  border: 1px solid rgba(130, 214, 255, 0.22);
+  color: var(--omni-text-primary);
+  font-size: 11.5px;
   font-weight: 500;
-  transition: border-color 0.18s, box-shadow 0.18s;
+  outline: none;
 }
 
 .omni-input:focus {
-  border-color: var(--cyan);
-  box-shadow: 0 0 0 2px rgba(56, 226, 255, 0.18);
+  border-color: var(--omni-cyan);
 }
 
-/* Avatar Accent Color Swatches (Zero Purple/Violet) */
 .omni-color-swatches {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
 }
 
 .omni-color-swatch {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: var(--swatch-color, #38e2ff);
   border: 2px solid rgba(255, 255, 255, 0.22);
-  transition: transform 0.18s var(--ease-snappy), border-color 0.18s, box-shadow 0.18s;
-}
-
-.omni-color-swatch:hover {
-  transform: scale(1.14);
+  background: var(--swatch-color, #38e2ff);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.12s ease, border-color 0.12s ease;
 }
 
 .omni-color-swatch.is-active {
-  transform: scale(1.18);
   border-color: #ffffff;
-  box-shadow: 0 0 12px var(--swatch-color, #38e2ff);
+  transform: scale(1.14);
+  box-shadow: 0 0 8px var(--swatch-color, #38e2ff);
 }
 
-/* 4-Char Room Code Row */
 .omni-room-row {
-  display: grid;
-  grid-template-columns: 108px 1fr;
-  gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .omni-room-code-input {
+  width: 70px;
+  height: 28px;
   text-align: center;
-  font-family: var(--font-display);
-  font-size: 1.02rem;
+  font-family: var(--omni-font-display);
+  font-size: 12px;
   font-weight: 800;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--amber-bright);
-  background: rgba(4, 9, 18, 0.88);
-  border: 1px solid var(--amber-border);
-  border-radius: var(--radius-sm);
-  padding: 8px 6px;
-}
-
-.omni-room-code-input:focus {
-  border-color: var(--amber-bright);
-  box-shadow: 0 0 0 2px var(--amber-glow);
+  color: var(--omni-amber);
+  background: rgba(3, 8, 16, 0.82);
+  border: 1px solid rgba(255, 179, 71, 0.42);
+  border-radius: 6px;
+  outline: none;
+  flex-shrink: 0;
 }
 
 .omni-room-actions {
   display: flex;
-  gap: 6px;
+  flex: 1;
+  gap: 4px;
 }
 
 .omni-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  background: rgba(56, 226, 255, 0.12);
-  border: 1px solid var(--cyan-border);
-  font-family: var(--font-tech);
-  font-size: 0.86rem;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-family: var(--omni-font-tactical);
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: var(--text-primary);
-  transition:
-    background 0.18s,
-    border-color 0.18s,
-    transform 0.18s var(--ease-snappy),
-    box-shadow 0.18s;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid rgba(130, 214, 255, 0.24);
+  background: rgba(16, 32, 54, 0.78);
+  color: var(--omni-text-primary);
   white-space: nowrap;
-}
-
-.omni-btn:hover {
-  background: rgba(56, 226, 255, 0.22);
-  border-color: var(--cyan);
-  box-shadow: 0 0 14px var(--cyan-glow);
-}
-
-.omni-btn:active {
-  transform: scale(0.97);
-}
-
-.omni-btn.is-amber {
-  background: var(--amber-subtle);
-  border-color: var(--amber-border);
-  color: var(--amber-bright);
-}
-
-.omni-btn.is-amber:hover {
-  background: rgba(255, 179, 71, 0.24);
-  border-color: var(--amber-bright);
-  box-shadow: 0 0 14px var(--amber-glow);
-}
-
-.omni-btn.is-danger {
-  background: rgba(255, 94, 87, 0.12);
-  border-color: rgba(255, 94, 87, 0.36);
-  color: #ff948f;
-}
-
-.omni-btn.is-danger:hover {
-  background: rgba(255, 94, 87, 0.22);
-  border-color: var(--danger);
-}
-
-.omni-room-actions .omni-btn {
   flex: 1;
 }
 
-/* Direct Invite Copy Button */
-.omni-invite-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 9px 12px;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(90deg, rgba(56, 226, 255, 0.14), rgba(25, 212, 198, 0.14));
-  border: 1px solid rgba(56, 226, 255, 0.38);
-  font-family: var(--font-tech);
-  font-size: 0.88rem;
-  font-weight: 700;
-  letter-spacing: 0.03em;
-  color: var(--cyan-bright);
-  transition:
-    background 0.2s,
-    border-color 0.2s,
-    transform 0.2s var(--ease-snappy),
-    box-shadow 0.2s;
+.omni-btn:hover {
+  border-color: var(--omni-cyan);
+  background: rgba(56, 226, 255, 0.18);
 }
 
-.omni-invite-btn:hover {
-  background: linear-gradient(90deg, rgba(56, 226, 255, 0.24), rgba(25, 212, 198, 0.24));
-  border-color: var(--cyan-bright);
-  box-shadow: 0 4px 18px var(--cyan-glow);
+.omni-btn.is-amber {
+  border-color: rgba(255, 179, 71, 0.5);
+  background: rgba(255, 179, 71, 0.16);
+  color: #ffe2b0;
+}
+
+.omni-btn.is-danger {
+  flex: 0 0 auto;
+  border-color: rgba(255, 94, 87, 0.48);
+  background: rgba(255, 94, 87, 0.16);
+  color: #ffb4b0;
+}
+
+.omni-invite-btn {
+  width: 100%;
+  height: 28px;
+  border-radius: 6px;
+  font-family: var(--omni-font-tactical);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px dashed rgba(56, 226, 255, 0.48);
+  background: rgba(56, 226, 255, 0.1);
+  color: var(--omni-cyan-bright);
 }
 
 .omni-invite-btn.is-copied {
-  background: rgba(102, 242, 165, 0.22);
-  border-color: var(--mint);
-  color: var(--mint);
-  box-shadow: 0 0 18px var(--mint-glow);
+  border-style: solid;
+  border-color: var(--omni-mint);
+  background: rgba(102, 242, 165, 0.18);
+  color: var(--omni-mint);
 }
 
 .omni-invite-url-preview {
-  font-family: var(--font-tech);
-  font-size: 0.74rem;
-  color: var(--text-muted);
-  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 9.5px;
+  color: var(--omni-text-muted);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-/* Connected Squad List */
 .omni-squad-section {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  flex: 1 1 auto;
-  min-height: 82px;
+  gap: 4px;
 }
 
 .omni-squad-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  max-height: 110px;
   overflow-y: auto;
-  max-height: 170px;
-  padding-right: 2px;
 }
 
 .omni-peer-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 7px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(4, 10, 20, 0.66);
-  border: 1px solid rgba(56, 226, 255, 0.14);
+  gap: 6px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: rgba(4, 10, 19, 0.65);
+  border: 1px solid rgba(130, 214, 255, 0.12);
+  font-size: 11px;
 }
 
 .omni-peer-ident {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
 }
 
 .omni-peer-dot {
-  width: 10px;
-  height: 10px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
-  box-shadow: 0 0 8px currentColor;
 }
 
 .omni-peer-name {
-  font-family: var(--font-body);
-  font-size: 0.82rem;
   font-weight: 600;
-  color: var(--text-primary);
+  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .omni-peer-badge {
-  padding: 1px 6px;
-  border-radius: 4px;
-  background: rgba(255, 179, 71, 0.16);
-  border: 1px solid rgba(255, 179, 71, 0.4);
-  font-family: var(--font-tech);
-  font-size: 0.68rem;
+  font-family: var(--omni-font-tactical);
+  font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  color: var(--amber-bright);
+  padding: 0 4px;
+  border-radius: 3px;
+  background: rgba(255, 179, 71, 0.18);
+  color: var(--omni-amber);
 }
 
 .omni-peer-meta {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+  font-family: var(--omni-font-tactical);
+  font-size: 10px;
   flex-shrink: 0;
 }
 
 .omni-peer-world {
-  font-family: var(--font-tech);
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: var(--text-muted);
+  color: var(--omni-text-muted);
   text-transform: uppercase;
 }
 
 .omni-peer-ping {
-  font-family: var(--font-tech);
-  font-size: 0.76rem;
   font-weight: 700;
-  padding: 1px 6px;
-  border-radius: 4px;
-  background: rgba(102, 242, 165, 0.12);
-  color: var(--mint);
+  color: var(--omni-mint);
 }
-
 .omni-peer-ping.is-mid {
-  background: rgba(56, 226, 255, 0.12);
-  color: var(--cyan);
+  color: var(--omni-amber);
 }
-
 .omni-peer-ping.is-high {
-  background: rgba(255, 179, 71, 0.14);
-  color: var(--amber);
+  color: var(--omni-coral);
 }
 
-/* ==========================================================================
-   2C. 6 OPEN-WORLD SHOWCASE CARDS (WORLD_CATALOG)
-   ========================================================================== */
-
-.omni-worlds-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
-  align-content: stretch;
-}
-
-.omni-world-card {
-  --world-accent: #38e2ff;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 10px;
-  padding: 15px 16px;
-  background:
-    radial-gradient(
-      circle at 92% 8%,
-      color-mix(in srgb, var(--world-accent) 16%, transparent) 0%,
-      transparent 52%
-    ),
-    var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid rgba(56, 226, 255, 0.22);
-  border-radius: var(--radius-lg);
-  box-shadow:
-    0 12px 32px rgba(0, 0, 0, 0.42),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  transition:
-    transform 0.24s var(--ease-out-expo),
-    border-color 0.24s var(--ease-out-expo),
-    box-shadow 0.24s var(--ease-out-expo);
-  cursor: pointer;
-}
-
-.omni-world-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--world-accent), transparent 85%);
-  opacity: 0.85;
-}
-
-.omni-world-card:hover {
-  transform: translateY(-4px);
-  border-color: var(--world-accent);
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.56),
-    0 0 26px color-mix(in srgb, var(--world-accent) 26%, transparent),
-    inset 0 1px 0 rgba(255, 255, 255, 0.14);
-}
-
-.omni-world-card-top {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.omni-world-header-row {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.omni-world-emblem {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  background: color-mix(in srgb, var(--world-accent) 14%, rgba(6, 12, 24, 0.8));
-  border: 1px solid color-mix(in srgb, var(--world-accent) 48%, transparent);
-  color: var(--world-accent);
-  flex-shrink: 0;
-  box-shadow: 0 0 16px color-mix(in srgb, var(--world-accent) 20%, transparent);
-}
-
-.omni-world-emblem svg {
-  width: 23px;
-  height: 23px;
-}
-
-.omni-world-genre {
-  font-family: var(--font-tech);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--world-accent) 12%, rgba(5, 10, 20, 0.7));
-  border: 1px solid color-mix(in srgb, var(--world-accent) 36%, transparent);
-  color: var(--world-accent);
-  text-align: right;
-}
-
-.omni-world-title {
-  font-family: var(--font-display);
-  font-size: 0.98rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  color: var(--text-primary);
-}
-
-.omni-world-subtitle {
-  font-family: var(--font-tech);
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--world-accent);
-  margin-top: -4px;
-}
-
-.omni-world-desc {
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  line-height: 1.44;
-  color: var(--text-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.omni-world-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.omni-feature-chip {
-  font-family: var(--font-tech);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  padding: 2px 7px;
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.045);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: var(--text-secondary);
-}
-
-.omni-world-launch-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 8px 13px;
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--world-accent) 14%, rgba(7, 14, 26, 0.85));
-  border: 1px solid color-mix(in srgb, var(--world-accent) 45%, transparent);
-  font-family: var(--font-display);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.09em;
-  color: var(--text-primary);
-  transition:
-    background 0.2s,
-    border-color 0.2s,
-    box-shadow 0.2s,
-    transform 0.2s var(--ease-snappy);
-}
-
-.omni-world-card:hover .omni-world-launch-btn {
-  background: color-mix(in srgb, var(--world-accent) 26%, rgba(7, 14, 26, 0.92));
-  border-color: var(--world-accent);
-  box-shadow: 0 0 16px color-mix(in srgb, var(--world-accent) 30%, transparent);
-}
-
-/* ==========================================================================
-   2D. GRAPHICS & AUDIO SETTINGS BAR
-   ========================================================================== */
-
-.omni-settings-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 14px;
-  padding: 10px 18px;
-  background: var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--cyan-border);
-  border-radius: var(--radius-lg);
-  flex-shrink: 0;
-}
-
-.omni-settings-cluster {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 14px;
-}
-
-.omni-setting-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.omni-setting-label {
-  font-family: var(--font-tech);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
+/* Settings Drawer Controls */
 .omni-segmented {
-  display: inline-flex;
+  display: flex;
+  background: rgba(3, 8, 16, 0.78);
   padding: 2px;
-  border-radius: var(--radius-sm);
-  background: rgba(4, 8, 16, 0.82);
-  border: 1px solid rgba(56, 226, 255, 0.22);
+  border-radius: 6px;
+  border: 1px solid rgba(130, 214, 255, 0.18);
+  gap: 2px;
 }
 
 .omni-seg-btn {
-  padding: 5px 10px;
-  border-radius: 6px;
-  font-family: var(--font-tech);
-  font-size: 0.8rem;
+  flex: 1;
+  height: 24px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--omni-text-secondary);
+  font-family: var(--omni-font-tactical);
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--text-secondary);
-  transition: background 0.18s, color 0.18s, box-shadow 0.18s;
-}
-
-.omni-seg-btn:hover {
-  color: var(--text-primary);
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
 .omni-seg-btn.is-active {
-  background: rgba(56, 226, 255, 0.22);
-  color: var(--cyan-bright);
-  box-shadow: 0 0 12px rgba(56, 226, 255, 0.2);
+  background: rgba(56, 226, 255, 0.24);
+  color: #ffffff;
 }
 
-/* Cyber Toggle Switch */
 .omni-toggle-btn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  background: rgba(4, 8, 16, 0.75);
-  border: 1px solid rgba(56, 226, 255, 0.22);
-  font-family: var(--font-tech);
-  font-size: 0.8rem;
+  justify-content: space-between;
+  width: 100%;
+  height: 28px;
+  padding: 0 9px;
+  border-radius: 6px;
+  border: 1px solid rgba(130, 214, 255, 0.2);
+  background: rgba(3, 8, 16, 0.68);
+  color: var(--omni-text-secondary);
+  font-family: var(--omni-font-tactical);
+  font-size: 11px;
   font-weight: 700;
-  color: var(--text-secondary);
-  transition: border-color 0.18s, color 0.18s, background 0.18s;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.omni-toggle-btn.is-active {
+  border-color: rgba(102, 242, 165, 0.45);
+  color: var(--omni-mint);
 }
 
 .omni-toggle-track {
-  width: 28px;
-  height: 15px;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.14);
+  width: 26px;
+  height: 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
   position: relative;
-  transition: background 0.2s;
 }
 
 .omni-toggle-thumb {
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 11px;
-  height: 11px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: var(--text-secondary);
-  transition: transform 0.2s var(--ease-snappy), background 0.2s;
-}
-
-.omni-toggle-btn.is-active {
-  border-color: rgba(102, 242, 165, 0.45);
-  color: var(--mint);
+  background: #cfdceb;
+  transition: transform 0.14s ease;
 }
 
 .omni-toggle-btn.is-active .omni-toggle-track {
-  background: rgba(102, 242, 165, 0.28);
+  background: rgba(102, 242, 165, 0.35);
 }
 
 .omni-toggle-btn.is-active .omni-toggle-thumb {
-  transform: translateX(13px);
-  background: var(--mint);
+  transform: translateX(12px);
+  background: var(--omni-mint);
 }
 
-/* Volume Sliders */
 .omni-slider-wrap {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 7px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: rgba(3, 8, 16, 0.68);
+  border: 1px solid rgba(130, 214, 255, 0.16);
 }
 
 .omni-slider-wrap svg {
-  width: 15px;
-  height: 15px;
-  color: var(--cyan);
+  width: 13px;
+  height: 13px;
+  color: var(--omni-cyan);
   flex-shrink: 0;
 }
 
 .omni-range {
   -webkit-appearance: none;
   appearance: none;
-  width: 82px;
+  flex: 1;
   height: 4px;
-  border-radius: var(--radius-pill);
-  background: rgba(56, 226, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(130, 214, 255, 0.22);
+  outline: none;
   cursor: pointer;
 }
 
 .omni-range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 13px;
-  height: 13px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: var(--cyan);
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 8px var(--cyan);
-}
-
-.omni-range::-moz-range-thumb {
-  width: 13px;
-  height: 13px;
-  border-radius: 50%;
-  background: var(--cyan);
-  border: 2px solid #ffffff;
-  box-shadow: 0 0 8px var(--cyan);
+  background: var(--omni-cyan);
+  border: 1.5px solid #ffffff;
 }
 
 .omni-slider-val {
-  font-family: var(--font-tech);
-  font-size: 0.78rem;
+  min-width: 30px;
+  text-align: right;
+  font-family: var(--omni-font-tactical);
+  font-size: 10.5px;
   font-weight: 700;
-  width: 32px;
-  color: var(--text-secondary);
+  color: var(--omni-text-primary);
 }
 
-/* ==========================================================================
-   3. CONTROLS CHEAT-SHEET MODAL (#omniverse-controls-modal)
-   ========================================================================== */
+/* ============================================================================
+   CENTERED 6 OPEN-WORLD CARDS GRID — COMPACT & UNCLUTTERED
+   ============================================================================ */
 
-#omniverse-controls-modal {
-  position: fixed;
-  inset: 0;
-  z-index: 110;
-  pointer-events: auto;
-  display: grid;
-  place-items: center;
-  padding: 20px;
-  background: rgba(3, 7, 14, 0.76);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  transition: opacity 0.22s var(--ease-out-expo), visibility 0.22s;
-}
-
-.omni-modal-card {
-  width: min(880px, 96vw);
-  max-height: 88dvh;
-  overflow-y: auto;
-  padding: 22px;
-  border-radius: var(--radius-lg);
-  background: var(--glass-obsidian-strong);
-  border: 1px solid var(--cyan-border-strong);
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.68), 0 0 32px var(--cyan-glow);
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.omni-modal-header {
+.omni-hub-main {
+  flex: 1;
+  min-height: 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(56, 226, 255, 0.18);
+  justify-content: center;
+  overflow-y: auto;
+  padding: 2px 0;
 }
 
-.omni-modal-title {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  color: var(--cyan-bright);
-}
-
-.omni-controls-columns {
+.omni-worlds-grid {
+  width: min(920px, 100%);
+  margin: auto;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 14px;
+  gap: 8px;
 }
 
-.omni-controls-col {
-  padding: 14px;
-  border-radius: var(--radius-md);
-  background: rgba(8, 16, 30, 0.72);
-  border: 1px solid rgba(56, 226, 255, 0.18);
+.omni-world-card {
+  --world-accent: #38e2ff;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 9px 11px;
+  border-radius: 10px;
+  background: var(--omni-glass-card);
+  backdrop-filter: var(--omni-blur);
+  -webkit-backdrop-filter: var(--omni-blur);
+  border: 1px solid rgba(130, 214, 255, 0.16);
+  border-top: 2px solid var(--world-accent);
+  box-shadow: var(--omni-shadow-sm);
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+  overflow: hidden;
 }
 
-.omni-controls-col h4 {
-  font-family: var(--font-display);
-  font-size: 0.78rem;
-  letter-spacing: 0.07em;
-  color: var(--amber-bright);
-  margin-bottom: 4px;
+.omni-world-card:hover {
+  transform: translateY(-2px);
+  background: var(--omni-glass-card-hover);
+  border-color: var(--world-accent);
 }
 
-.omni-bind-row {
+.omni-world-card-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
+  min-width: 0;
 }
 
-.omni-kbd {
-  font-family: var(--font-tech);
-  font-size: 0.76rem;
+.omni-world-emblem {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  display: grid;
+  place-items: center;
+  color: var(--world-accent);
+  flex-shrink: 0;
+}
+
+.omni-world-emblem svg {
+  width: 15px;
+  height: 15px;
+}
+
+.omni-world-headings {
+  flex: 1;
+  min-width: 0;
+}
+
+.omni-world-title {
+  margin: 0;
+  font-family: var(--omni-font-display);
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.omni-world-subtitle {
+  font-family: var(--omni-font-tactical);
+  font-size: 10px;
   font-weight: 700;
-  padding: 2px 7px;
-  border-radius: 5px;
-  background: rgba(56, 226, 255, 0.12);
-  border: 1px solid rgba(56, 226, 255, 0.34);
-  color: var(--cyan-bright);
+  color: var(--world-accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.omni-world-play-pill {
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--world-accent);
+  font-family: var(--omni-font-display);
+  font-size: 9px;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+.omni-world-card:hover .omni-world-play-pill {
+  background: var(--world-accent);
+  border-color: var(--world-accent);
+  color: #04101d;
+}
+
+.omni-world-desc {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.32;
+  color: var(--omni-text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.omni-world-features {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow: hidden;
+  gap: 4px;
+}
+
+.omni-feature-chip {
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: var(--omni-font-tactical);
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #cde3fa;
+  background: rgba(5, 13, 25, 0.72);
+  border: 1px solid rgba(130, 214, 255, 0.14);
   white-space: nowrap;
 }
 
-/* ==========================================================================
-   4. NON-INTRUSIVE DYNAMIC IN-GAME HUD (#omniverse-hud)
-   ========================================================================== */
+/* ============================================================================
+   2. IN-GAME TACTICAL HUD (#omniverse-hud) — ZERO COLLISIONS
+   ============================================================================ */
 
 #omniverse-hud {
   position: fixed;
   inset: 0;
-  z-index: 45;
+  z-index: 15;
   pointer-events: none;
-  transition: opacity 0.26s var(--ease-out-expo), visibility 0.26s;
 }
 
-/* Top-Left: Tilted 3D Radar Minimap + Vitals + Credits */
+/* --- TOP-LEFT: Side-by-Side Compact Radar + Vitals (Max height 88px / 62px mobile) --- */
 .omni-hud-topleft {
   position: absolute;
-  top: calc(14px + var(--safe-top));
-  left: calc(16px + var(--safe-left));
+  top: max(6px, var(--safe-top));
+  left: max(8px, var(--safe-left));
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-start;
-  gap: 10px;
-  z-index: 5;
+  gap: 6px;
+  pointer-events: none;
 }
 
 .omni-radar-shell {
-  position: relative;
-  width: 178px;
-  height: 178px;
-  display: grid;
-  place-items: center;
+  width: 88px;
+  height: 88px;
+  perspective: 420px;
+  flex-shrink: 0;
 }
 
 .omni-radar-bezel {
-  position: relative;
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  padding: 5px;
-  background: var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1.5px solid var(--cyan-border-strong);
-  box-shadow:
-    0 16px 34px rgba(0, 0, 0, 0.58),
-    0 0 22px rgba(56, 226, 255, 0.18),
-    inset 0 2px 10px rgba(56, 226, 255, 0.18);
-  transform: perspective(420px) rotateX(28deg);
-  transform-style: preserve-3d;
+  padding: 2px;
+  background: rgba(4, 10, 20, 0.84);
+  border: 1.2px solid rgba(56, 226, 255, 0.42);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.52);
+  transform: rotateX(12deg);
   overflow: hidden;
-}
-
-.omni-radar-bezel::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.1) 0%,
-    transparent 38%,
-    rgba(0, 0, 0, 0.28) 100%
-  );
-  pointer-events: none;
 }
 
 #omniverse-radar-canvas {
@@ -1311,383 +976,367 @@ a {
   border-radius: 50%;
 }
 
-.omni-radar-cardinal {
-  position: absolute;
-  font-family: var(--font-display);
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  pointer-events: none;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
-}
-
-.omni-radar-cardinal.is-n {
-  top: 2px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: var(--amber-bright);
-}
-
-.omni-radar-cardinal.is-e {
-  right: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--cyan-bright);
-}
-
-.omni-radar-cardinal.is-s {
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: var(--text-secondary);
-}
-
-.omni-radar-cardinal.is-w {
-  left: 4px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--cyan-bright);
+.omni-topleft-side {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 78px;
+  max-width: 112px;
+  padding-top: 2px;
 }
 
 .omni-radar-coords {
-  margin-top: -10px;
-  padding: 2px 10px;
-  border-radius: var(--radius-pill);
-  background: var(--glass-obsidian);
-  border: 1px solid var(--cyan-border);
-  font-family: var(--font-tech);
-  font-size: 0.74rem;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: rgba(5, 11, 21, 0.76);
+  border: 1px solid rgba(130, 214, 255, 0.15);
+  font-family: var(--omni-font-tactical);
+  font-size: 9.5px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--text-secondary);
+  color: var(--omni-cyan-bright);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Health, Stamina & Credits */
 .omni-vitals-stack {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  width: 178px;
+  gap: 3px;
 }
 
 .omni-vital-bar-row {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 4px 8px;
-  border-radius: var(--radius-sm);
-  background: var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid rgba(56, 226, 255, 0.2);
+  gap: 4px;
+  padding: 2px 5px;
+  border-radius: 5px;
+  background: rgba(5, 11, 21, 0.76);
+  border: 1px solid rgba(130, 214, 255, 0.14);
 }
 
 .omni-vital-label {
-  font-family: var(--font-tech);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  width: 26px;
-  color: var(--text-secondary);
+  width: 18px;
+  font-family: var(--omni-font-display);
+  font-size: 7.5px;
+  font-weight: 800;
+  color: var(--omni-text-secondary);
 }
 
 .omni-vital-track {
   flex: 1;
-  height: 6px;
-  border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.1);
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
   overflow: hidden;
 }
 
 .omni-vital-fill {
   height: 100%;
   width: 100%;
-  border-radius: var(--radius-pill);
-  transform-origin: left center;
-  transition: width 0.15s linear, background-color 0.2s;
+  border-radius: 999px;
+  transition: width 0.14s ease;
 }
 
 .omni-vital-fill.is-health {
-  background: linear-gradient(90deg, #ff5e57, #ff8f6b);
-  box-shadow: 0 0 10px rgba(255, 94, 87, 0.5);
+  background: linear-gradient(90deg, #19d4c6, #66f2a5);
 }
-
 .omni-vital-fill.is-health.is-critical {
-  animation: omniAlertBlink 0.65s infinite alternate;
+  background: linear-gradient(90deg, #ff5e57, #ffb347);
 }
-
 .omni-vital-fill.is-stamina {
-  background: linear-gradient(90deg, var(--teal), var(--mint));
-  box-shadow: 0 0 10px var(--mint-glow);
+  background: linear-gradient(90deg, #38e2ff, #84f1ff);
 }
-
 .omni-vital-fill.is-stamina.is-low {
-  background: var(--amber);
+  background: linear-gradient(90deg, #ffb347, #ffd166);
 }
 
 .omni-credits-row {
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  background: var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--amber-border);
-  font-family: var(--font-display);
-  font-size: 0.8rem;
+  gap: 4px;
+  padding: 1px 6px;
+  border-radius: 5px;
+  background: rgba(5, 11, 21, 0.8);
+  border: 1px solid rgba(255, 179, 71, 0.34);
+  font-family: var(--omni-font-display);
+  font-size: 9.5px;
   font-weight: 700;
-  color: var(--amber-bright);
+  color: var(--omni-amber);
 }
 
-/* Top-Center: World Context Banner + Contextual Toolbar */
+/* --- TOP-CENTER: Compact Status Strip + Single-Line Scrollable World Toolbar --- */
 .omni-hud-topcenter {
   position: absolute;
-  top: calc(12px + var(--safe-top));
+  top: max(6px, var(--safe-top));
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
-  max-width: min(760px, calc(100vw - 420px));
-  z-index: 6;
+  gap: 4px;
+  max-width: min(560px, calc(100vw - 410px));
+  pointer-events: none;
 }
 
 .omni-world-status-pill {
   display: inline-flex;
   align-items: center;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px;
-  padding: 5px 14px;
-  border-radius: var(--radius-pill);
-  background: var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--cyan-border);
-  font-family: var(--font-tech);
-  font-size: 0.8rem;
+  gap: 6px;
+  height: 24px;
+  max-width: 100%;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--omni-glass-bg);
+  backdrop-filter: var(--omni-blur);
+  -webkit-backdrop-filter: var(--omni-blur);
+  border: 1px solid var(--omni-border-subtle);
+  font-family: var(--omni-font-tactical);
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--text-primary);
+  letter-spacing: 0.04em;
+  color: var(--omni-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  pointer-events: auto;
+}
+
+#omni-hud-world-title {
+  font-family: var(--omni-font-display);
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .omni-context-tag {
-  padding: 1px 7px;
-  border-radius: var(--radius-pill);
-  background: rgba(56, 226, 255, 0.15);
-  color: var(--cyan-bright);
-  font-size: 0.72rem;
-  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: rgba(56, 226, 255, 0.16);
+  color: var(--omni-cyan-bright);
+  font-size: 9px;
+  flex-shrink: 0;
 }
 
-.omni-weather-tag {
-  color: var(--amber-bright);
-  font-size: 0.76rem;
+.omni-weather-tag,
+.omni-status-hint {
+  color: var(--omni-text-secondary);
+  font-size: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
 }
 
 .omni-status-hint {
-  color: var(--text-secondary);
-  font-weight: 600;
+  color: var(--omni-amber);
 }
 
-/* Dynamic World Contextual Toolbar (#omniverse-world-toolbar) */
+.omni-toolbar-toggle-btn {
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 226, 255, 0.32);
+  background: rgba(56, 226, 255, 0.12);
+  color: var(--omni-cyan-bright);
+  font-family: var(--omni-font-tactical);
+  font-size: 9.5px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Single-Row Scrollable World Toolbar (Normalizes All World HTML) */
 #omniverse-world-toolbar {
   pointer-events: auto;
   display: flex;
+  flex-wrap: nowrap !important;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  padding: 6px 10px;
-  border-radius: var(--radius-md);
-  background: var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--cyan-border);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
+  gap: 4px;
+  max-width: 100%;
+  padding: 3px 6px;
+  border-radius: 8px;
+  background: var(--omni-glass-bg);
+  backdrop-filter: var(--omni-blur);
+  -webkit-backdrop-filter: var(--omni-blur);
+  border: 1px solid var(--omni-border-subtle);
+  box-shadow: var(--omni-shadow-sm);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
 }
 
-#omniverse-world-toolbar:empty,
-#omniverse-world-toolbar.is-empty {
+#omniverse-world-toolbar::-webkit-scrollbar {
   display: none;
 }
 
-/* Universal styling for elements injected into #omniverse-world-toolbar by all 6 worlds */
+#omniverse-world-toolbar.is-empty,
+#omniverse-world-toolbar.is-collapsed {
+  display: none !important;
+}
+
+/* Strip nested wrapper boxes & wrapping from world toolbars */
+#omniverse-world-toolbar > div {
+  display: inline-flex !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  backdrop-filter: none !important;
+}
+
 #omniverse-world-toolbar button,
-#omniverse-world-toolbar .toolbar-btn,
-#omniverse-world-toolbar .omni-tb-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: 7px;
-  background: rgba(56, 226, 255, 0.11);
-  border: 1px solid rgba(56, 226, 255, 0.28);
-  font-family: var(--font-tech);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--text-primary);
-  transition: background 0.16s, border-color 0.16s, transform 0.14s;
-  white-space: nowrap;
-}
-
-#omniverse-world-toolbar button:hover,
-#omniverse-world-toolbar button.active,
-#omniverse-world-toolbar button.is-active {
-  background: rgba(56, 226, 255, 0.25);
-  border-color: var(--cyan);
-  color: var(--cyan-bright);
-}
-
-#omniverse-world-toolbar input[type='text'],
-#omniverse-world-toolbar input[type='search'],
 #omniverse-world-toolbar select {
-  padding: 5px 9px;
-  border-radius: 7px;
-  background: rgba(4, 9, 18, 0.85);
-  border: 1px solid rgba(56, 226, 255, 0.28);
-  font-family: var(--font-body);
-  font-size: 0.8rem;
-  color: var(--text-primary);
-  min-width: 120px;
+  height: 23px !important;
+  padding: 0 7px !important;
+  border-radius: 6px !important;
+  font-family: var(--omni-font-tactical) !important;
+  font-size: 10.5px !important;
+  font-weight: 700 !important;
+  line-height: 1 !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
 }
 
-#omniverse-world-toolbar select option {
-  background: #070d18;
-  color: var(--text-primary);
+#omniverse-world-toolbar select {
+  background: rgba(8, 18, 34, 0.9) !important;
+  color: #eef6ff !important;
+  border: 1px solid rgba(56, 226, 255, 0.36) !important;
+  cursor: pointer;
+  outline: none;
+}
+
+#omniverse-world-toolbar input[type='text'] {
+  height: 23px !important;
+  width: 96px !important;
+  padding: 0 6px !important;
+  border-radius: 6px !important;
+  font-size: 10.5px !important;
+  flex-shrink: 0 !important;
+}
+
+#omniverse-world-toolbar input[type='range'] {
+  width: 48px !important;
+  height: 4px !important;
+  flex-shrink: 0 !important;
 }
 
 #omniverse-world-toolbar span,
 #omniverse-world-toolbar label {
-  font-family: var(--font-tech);
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-secondary);
+  font-size: 10.5px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
 }
 
-/* Top-Right: Telemetry Pill + Invite Pill + Hub Button */
+/* --- TOP-RIGHT: Single-Row Compact Bar (Height 24px) --- */
 .omni-hud-topright {
   position: absolute;
-  top: calc(12px + var(--safe-top));
-  right: calc(16px + var(--safe-right));
+  top: max(6px, var(--safe-top));
+  right: max(8px, var(--safe-right));
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  z-index: 6;
-}
-
-.omni-topright-row {
-  display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: flex-end;
+  gap: 4px;
+  pointer-events: none;
 }
 
 .omni-telemetry-pill {
+  pointer-events: auto;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 12px;
-  border-radius: var(--radius-pill);
-  background: var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--cyan-border);
-  font-family: var(--font-tech);
-  font-size: 0.78rem;
+  gap: 5px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: var(--omni-glass-bg);
+  backdrop-filter: var(--omni-blur);
+  -webkit-backdrop-filter: var(--omni-blur);
+  border: 1px solid var(--omni-border-subtle);
+  font-family: var(--omni-font-tactical);
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.05em;
-  color: var(--text-secondary);
+  color: var(--omni-text-secondary);
+  white-space: nowrap;
 }
 
 .omni-tel-fps {
-  color: var(--mint);
-  font-weight: 700;
+  color: var(--omni-mint);
+  font-weight: 800;
 }
-
 .omni-tel-fps.is-warn {
-  color: var(--amber);
+  color: var(--omni-amber);
 }
-
 .omni-tel-sep {
   opacity: 0.35;
 }
 
-.omni-hud-action-btn {
-  pointer-events: auto;
+.omni-topright-row {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: var(--radius-pill);
-  background: var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--cyan-border-strong);
-  font-family: var(--font-tech);
-  font-size: 0.82rem;
+  gap: 4px;
+  pointer-events: auto;
+}
+
+.omni-hud-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 7px;
+  border-radius: 6px;
+  background: var(--omni-glass-bg);
+  backdrop-filter: var(--omni-blur);
+  -webkit-backdrop-filter: var(--omni-blur);
+  border: 1px solid var(--omni-border-subtle);
+  color: var(--omni-text-primary);
+  font-family: var(--omni-font-tactical);
+  font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--cyan-bright);
-  transition: background 0.18s, transform 0.16s, border-color 0.18s;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .omni-hud-action-btn:hover {
-  background: rgba(56, 226, 255, 0.22);
-  border-color: var(--cyan-bright);
-  transform: translateY(-1px);
+  border-color: var(--omni-cyan);
+  background: rgba(56, 226, 255, 0.18);
 }
 
 .omni-hud-action-btn.is-amber {
-  border-color: var(--amber-border);
-  color: var(--amber-bright);
+  border-color: rgba(255, 179, 71, 0.42);
+  color: #ffe0ad;
 }
 
-.omni-hud-action-btn.is-amber:hover {
-  background: rgba(255, 179, 71, 0.2);
-}
-
-/* ==========================================================================
-   4B. BOTTOM-RIGHT VECTORIAL SPEEDOMETER / FLIGHT / NAVAL GAUGE
-   ========================================================================== */
-
+/* --- VECTORIAL SPEEDOMETER (#omniverse-speed-gauge) — COMPACT --- */
 #omniverse-speed-gauge {
   position: absolute;
-  right: calc(22px + var(--safe-right));
-  bottom: calc(20px + var(--safe-bottom));
-  width: 196px;
-  padding: 12px 14px;
-  border-radius: var(--radius-lg);
-  background: var(--glass-obsidian);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--cyan-border);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.52);
+  right: max(12px, var(--safe-right));
+  bottom: max(10px, var(--safe-bottom));
+  width: 108px;
+  padding: 4px 6px 5px;
+  border-radius: 12px;
+  background: rgba(4, 10, 20, 0.78);
+  backdrop-filter: var(--omni-blur);
+  -webkit-backdrop-filter: var(--omni-blur);
+  border: 1px solid rgba(56, 226, 255, 0.28);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  transition:
-    opacity 0.26s var(--ease-out-expo),
-    transform 0.26s var(--ease-out-expo),
-    visibility 0.26s;
-}
-
-#omniverse-speed-gauge.is-hidden {
-  transform: translateY(16px) scale(0.95);
+  pointer-events: none;
 }
 
 .omni-gauge-svg-wrap {
   position: relative;
-  width: 156px;
-  height: 112px;
+  width: 94px;
+  height: 62px;
 }
 
 .omni-gauge-svg {
@@ -1698,7 +1347,7 @@ a {
 
 .omni-gauge-center-readout {
   position: absolute;
-  inset: 18px 0 0 0;
+  inset: 8px 0 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1706,33 +1355,29 @@ a {
 }
 
 .omni-speed-value {
-  font-family: var(--font-display);
-  font-size: 1.72rem;
+  font-family: var(--omni-font-display);
+  font-size: 17px;
   font-weight: 900;
   line-height: 1;
-  letter-spacing: 0.03em;
-  color: var(--text-primary);
-  text-shadow: 0 0 14px rgba(56, 226, 255, 0.35);
+  color: #ffffff;
 }
 
 .omni-speed-unit {
-  font-family: var(--font-tech);
-  font-size: 0.72rem;
+  font-family: var(--omni-font-tactical);
+  font-size: 8px;
   font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--cyan);
+  color: var(--omni-cyan-bright);
 }
 
 .omni-gear-badge {
-  margin-top: 3px;
-  padding: 1px 8px;
-  border-radius: 4px;
-  background: rgba(255, 179, 71, 0.16);
-  border: 1px solid var(--amber-border);
-  font-family: var(--font-display);
-  font-size: 0.68rem;
+  margin-top: 1px;
+  padding: 0 5px;
+  border-radius: 3px;
+  background: rgba(255, 179, 71, 0.18);
+  color: var(--omni-amber);
+  font-family: var(--omni-font-display);
+  font-size: 8px;
   font-weight: 800;
-  color: var(--amber-bright);
 }
 
 .omni-gauge-submetrics {
@@ -1740,120 +1385,91 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 6px;
-  padding-top: 6px;
-  border-top: 1px solid rgba(56, 226, 255, 0.14);
-  font-family: var(--font-tech);
-  font-size: 0.75rem;
+  gap: 3px;
+  padding-top: 2px;
+  border-top: 1px solid rgba(130, 214, 255, 0.12);
+  font-family: var(--omni-font-tactical);
+  font-size: 9px;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: var(--omni-text-secondary);
 }
 
 .omni-wind-rose {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  color: var(--teal);
+  gap: 3px;
+  color: var(--omni-teal);
 }
 
 .omni-wind-rose svg {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.12s linear;
+  width: 12px;
+  height: 12px;
 }
 
-/* Shift speedometer gracefully on touch devices so Right Joystick / Touch Buttons have full room */
-@media (pointer: coarse) {
-  #omniverse-speed-gauge {
-    right: calc(205px + var(--safe-right));
-    bottom: calc(14px + var(--safe-bottom));
-    transform-origin: bottom right;
-  }
-}
-
-/* ==========================================================================
-   4C. HOLOGRAPHIC FIGHTER JET PITCH-LADDER HUD & CROSSHAIR
-   ========================================================================== */
-
+/* --- CENTER CROSSHAIR & FIGHTER HUD --- */
 #omniverse-crosshair {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 22px;
-  height: 22px;
+  width: 16px;
+  height: 16px;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  opacity: 0.75;
-  transition: opacity 0.2s, transform 0.15s;
+  opacity: 0.72;
 }
 
 #omniverse-fighter-hud {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: min(460px, 76vw);
-  height: min(360px, 64dvh);
+  width: min(260px, 46vw);
+  height: min(200px, 48vh);
   transform: translate(-50%, -50%);
   pointer-events: none;
-  display: grid;
-  place-items: center;
-  transition: opacity 0.22s;
 }
 
 #omniverse-fighter-hud svg {
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  filter: drop-shadow(0 0 6px rgba(56, 226, 255, 0.45));
 }
 
 .omni-fighter-stall {
   position: absolute;
-  bottom: 14%;
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 4px 16px;
-  border-radius: 6px;
-  background: rgba(255, 94, 87, 0.22);
-  border: 1.5px solid var(--danger);
-  font-family: var(--font-display);
-  font-size: 0.88rem;
-  font-weight: 900;
-  letter-spacing: 0.16em;
-  color: #ff7670;
-  box-shadow: 0 0 20px var(--danger-glow);
-  animation: omniAlertBlink 0.36s infinite alternate;
+  padding: 1px 8px;
+  border-radius: 4px;
+  background: rgba(255, 94, 87, 0.25);
+  border: 1px solid var(--omni-coral);
+  font-family: var(--omni-font-display);
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #ffd7d5;
+  white-space: nowrap;
 }
 
-/* ==========================================================================
-   4D. SLOW-MOTION RADIAL WHEEL (#omniverse-radial-wheel)
-   ========================================================================== */
+/* ============================================================================
+   3. COMPACT RADIAL WHEEL (#omniverse-radial-wheel)
+   ============================================================================ */
 
 #omniverse-radial-wheel {
   position: fixed;
   inset: 0;
-  z-index: 65;
-  pointer-events: auto;
+  z-index: 40;
   display: grid;
   place-items: center;
-  background: radial-gradient(circle, rgba(5, 11, 22, 0.45) 0%, rgba(3, 7, 14, 0.72) 100%);
-  backdrop-filter: blur(8px) saturate(140%);
-  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  background: radial-gradient(circle, rgba(3, 9, 18, 0.35) 0%, rgba(2, 5, 12, 0.68) 100%);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  pointer-events: auto;
   touch-action: none;
-  transition: opacity 0.18s var(--ease-out-expo), visibility 0.18s;
 }
 
 .omni-radial-container {
   position: relative;
-  width: 340px;
-  height: 340px;
-  display: grid;
-  place-items: center;
-  transition: transform 0.22s var(--ease-out-expo);
-}
-
-#omniverse-radial-wheel.is-hidden .omni-radial-container {
-  transform: scale(0.88);
+  width: min(230px, 64vmin);
+  height: min(230px, 64vmin);
 }
 
 .omni-radial-svg {
@@ -1863,17 +1479,52 @@ a {
 }
 
 .omni-radial-slice {
-  fill: rgba(8, 16, 30, 0.82);
-  stroke: rgba(56, 226, 255, 0.28);
-  stroke-width: 1.4;
+  fill: rgba(8, 18, 34, 0.84);
+  stroke: rgba(130, 214, 255, 0.26);
+  stroke-width: 1.5;
   cursor: pointer;
-  transition: fill 0.14s, stroke 0.14s;
+  transition: fill 0.1s ease, stroke 0.1s ease;
 }
 
 .omni-radial-slice.is-hovered {
-  fill: rgba(56, 226, 255, 0.26);
-  stroke: var(--amber-bright);
+  fill: rgba(56, 226, 255, 0.3);
+  stroke: var(--omni-cyan);
   stroke-width: 2.2;
+}
+
+.omni-radial-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 34%;
+  height: 34%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(4, 10, 20, 0.94);
+  border: 1.2px solid rgba(56, 226, 255, 0.42);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4px;
+  pointer-events: none;
+}
+
+.omni-radial-center-cat {
+  font-family: var(--omni-font-tactical);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--omni-amber);
+  text-transform: uppercase;
+}
+
+.omni-radial-center-name {
+  font-family: var(--omni-font-display);
+  font-size: 9px;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.15;
 }
 
 .omni-radial-item-label {
@@ -1882,177 +1533,234 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   pointer-events: none;
+  width: 64px;
   text-align: center;
-  width: 84px;
 }
 
 .omni-radial-item-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  background: rgba(56, 226, 255, 0.12);
+  border: 1px solid rgba(130, 214, 255, 0.24);
   display: grid;
   place-items: center;
-  color: var(--cyan-bright);
-  font-size: 1.15rem;
+  color: var(--omni-cyan-bright);
+  font-size: 11px;
 }
 
 .omni-radial-item-icon svg {
-  width: 22px;
-  height: 22px;
-}
-
-.omni-radial-item-label.is-hovered .omni-radial-item-icon {
-  color: var(--amber-bright);
-  transform: scale(1.14);
+  width: 12px;
+  height: 12px;
 }
 
 .omni-radial-item-text {
-  font-family: var(--font-tech);
-  font-size: 0.74rem;
+  font-family: var(--omni-font-tactical);
+  font-size: 9px;
   font-weight: 700;
-  line-height: 1.1;
-  color: var(--text-primary);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+  line-height: 1.05;
+  color: var(--omni-text-primary);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95);
 }
 
-.omni-radial-center {
-  position: absolute;
-  width: 112px;
-  height: 112px;
-  border-radius: 50%;
-  background: var(--glass-obsidian-strong);
-  border: 1.5px solid var(--cyan-border-strong);
-  box-shadow: 0 0 24px var(--cyan-glow);
+/* ============================================================================
+   4. CONTROLS CHEAT-SHEET MODAL, COMPACT TOASTS & LOADER
+   ============================================================================ */
+
+#omniverse-controls-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  background: rgba(2, 6, 14, 0.76);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  pointer-events: auto;
+}
+
+.omni-modal-card {
+  width: min(740px, 100%);
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--omni-glass-strong);
+  border: 1px solid var(--omni-border-cyan);
+  box-shadow: var(--omni-shadow-lg);
+}
+
+.omni-modal-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 8px;
-  text-align: center;
-  pointer-events: none;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(130, 214, 255, 0.16);
 }
 
-.omni-radial-center-cat {
-  font-family: var(--font-tech);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--amber-bright);
-}
-
-.omni-radial-center-name {
-  font-family: var(--font-display);
-  font-size: 0.76rem;
+.omni-modal-title {
+  margin: 0;
+  font-family: var(--omni-font-display);
+  font-size: 12px;
   font-weight: 800;
-  color: var(--text-primary);
-  margin-top: 2px;
+  color: var(--omni-cyan-bright);
 }
 
-/* ==========================================================================
-   5. TOAST NOTIFICATIONS & LOADING CURTAIN
-   ========================================================================== */
+.omni-modal-header .omni-btn {
+  flex: 0 0 auto;
+  height: 25px;
+}
 
+.omni-controls-columns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.omni-controls-col {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(4, 10, 20, 0.65);
+  border: 1px solid rgba(130, 214, 255, 0.14);
+}
+
+.omni-controls-col h4 {
+  margin: 0 0 6px;
+  font-family: var(--omni-font-display);
+  font-size: 10px;
+  color: var(--omni-amber);
+}
+
+.omni-bind-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 3px 0;
+  border-bottom: 1px dashed rgba(130, 214, 255, 0.08);
+  font-size: 10.5px;
+  color: var(--omni-text-secondary);
+}
+
+.omni-bind-row:last-child {
+  border-bottom: 0;
+}
+
+.omni-kbd {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(56, 226, 255, 0.12);
+  border: 1px solid rgba(56, 226, 255, 0.28);
+  font-family: var(--omni-font-tactical);
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+/* Compact Non-Intrusive Toast Stack */
 #omniverse-toast-stack {
   position: fixed;
-  top: calc(86px + var(--safe-top));
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 115;
+  top: calc(max(6px, var(--safe-top)) + 30px);
+  right: max(8px, var(--safe-right));
+  z-index: 60;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 8px;
+  gap: 5px;
+  width: min(248px, calc(100vw - 16px));
   pointer-events: none;
-  width: min(420px, 90vw);
 }
 
 .omni-toast {
-  width: 100%;
   display: flex;
   align-items: center;
-  gap: 11px;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  background: var(--glass-obsidian-strong);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--cyan-border);
-  border-left: 3px solid var(--cyan);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.54);
-  animation: omniToastIn 0.28s var(--ease-out-expo) forwards;
+  gap: 7px;
+  padding: 6px 9px;
+  border-radius: 8px;
+  background: rgba(5, 12, 22, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(56, 226, 255, 0.34);
+  border-left: 3px solid var(--omni-cyan);
+  box-shadow: var(--omni-shadow-sm);
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
 .omni-toast.is-success {
-  border-left-color: var(--mint);
+  border-left-color: var(--omni-mint);
 }
-
 .omni-toast.is-warning {
-  border-left-color: var(--amber);
+  border-left-color: var(--omni-amber);
 }
-
 .omni-toast.is-leaving {
-  animation: omniToastOut 0.24s ease-in forwards;
+  opacity: 0;
+  transform: translateX(14px);
 }
 
 .omni-toast-icon {
-  width: 20px;
-  height: 20px;
+  width: 14px;
+  height: 14px;
+  color: var(--omni-cyan);
   flex-shrink: 0;
-  color: var(--cyan);
 }
-
 .omni-toast.is-success .omni-toast-icon {
-  color: var(--mint);
+  color: var(--omni-mint);
 }
-
 .omni-toast.is-warning .omni-toast-icon {
-  color: var(--amber);
+  color: var(--omni-amber);
+}
+.omni-toast-icon svg {
+  width: 14px;
+  height: 14px;
 }
 
 .omni-toast-body {
-  display: flex;
-  flex-direction: column;
   min-width: 0;
+  flex: 1;
 }
 
 .omni-toast-title {
-  font-family: var(--font-display);
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  color: var(--text-primary);
+  font-family: var(--omni-font-display);
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .omni-toast-msg {
-  font-family: var(--font-body);
-  font-size: 0.78rem;
-  color: var(--text-secondary);
+  font-size: 10px;
+  color: var(--omni-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Loading Curtain (#omniverse-loader) */
+/* Loader */
 #omniverse-loader {
   position: fixed;
   inset: 0;
-  z-index: 150;
-  pointer-events: auto;
+  z-index: 80;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 18px;
-  padding: 24px;
-  background:
-    radial-gradient(circle at 50% 45%, rgba(56, 226, 255, 0.12) 0%, transparent 52%),
-    #040811;
-  transition: opacity 0.36s var(--ease-out-expo), visibility 0.36s;
+  gap: 10px;
+  padding: 16px;
+  background: radial-gradient(circle at 50% 45%, rgba(10, 24, 44, 0.94), rgba(2, 6, 12, 0.98));
+  pointer-events: auto;
 }
 
 .omni-loader-orbital {
   position: relative;
-  width: 108px;
-  height: 108px;
+  width: 68px;
+  height: 68px;
   display: grid;
   place-items: center;
 }
@@ -2063,415 +1771,225 @@ a {
 }
 
 .omni-loader-spin-outer {
-  transform-origin: 50% 50%;
-  animation: omniRotateCW 2.4s linear infinite;
+  transform-origin: 50px 50px;
+  animation: omniSpin 1.8s linear infinite;
 }
-
 .omni-loader-spin-inner {
-  transform-origin: 50% 50%;
-  animation: omniRotateCCW 1.7s linear infinite;
+  transform-origin: 50px 50px;
+  animation: omniSpin 3s linear infinite reverse;
 }
 
-.omni-loader-pct {
-  position: absolute;
-  font-family: var(--font-display);
-  font-size: 0.88rem;
-  font-weight: 800;
-  color: var(--cyan-bright);
-}
-
-.omni-loader-title {
-  font-family: var(--font-display);
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-  color: var(--text-primary);
-}
-
-.omni-loader-status {
-  font-family: var(--font-tech);
-  font-size: 0.92rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--cyan);
-  text-align: center;
-  max-width: 460px;
-}
-
-/* ==========================================================================
-   6. HARMONIOUS TOUCH OVERLAY INTEGRATION (InputManager Joysticks & Buttons)
-   ========================================================================== */
-
-#omniverse-touch-controls,
-.omni-touch-overlay,
-.touch-overlay,
-.touch-controls {
-  position: fixed;
-  inset: 0;
-  z-index: 25;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: none;
-}
-
-/* Hide touch controls cleanly whenever Hub, Modal, or Loader is active */
-body.omni-hub-open #omniverse-touch-controls,
-body.omni-hub-open .omni-touch-overlay,
-body.omni-hub-open .touch-overlay,
-body.omni-hub-open .touch-controls {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-
-.touch-joystick,
-.touch-joystick-base,
-.joystick-base {
-  border-radius: 50%;
-  background: rgba(7, 13, 24, 0.52);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1.5px solid rgba(56, 226, 255, 0.34);
-  box-shadow: 0 0 20px rgba(56, 226, 255, 0.14);
-  touch-action: none;
-}
-
-.touch-joystick-knob,
-.touch-joystick-stick,
-.joystick-knob,
-.joystick-stick {
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(124, 238, 255, 0.9), rgba(56, 226, 255, 0.45));
-  border: 1.5px solid #ffffff;
-  box-shadow: 0 0 14px rgba(56, 226, 255, 0.55);
-  touch-action: none;
-}
-
-.touch-btn,
-.touch-action-btn {
-  pointer-events: auto;
-  touch-action: none;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: rgba(7, 13, 24, 0.68);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1.5px solid rgba(56, 226, 255, 0.38);
-  color: var(--cyan-bright);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
-  transition: transform 0.1s, background 0.12s, border-color 0.12s;
-}
-
-.touch-btn:active,
-.touch-action-btn:active,
-.touch-btn.is-pressed,
-.touch-action-btn.is-pressed {
-  transform: scale(0.92);
-  background: rgba(56, 226, 255, 0.28);
-  border-color: var(--amber-bright);
-  color: var(--amber-bright);
-}
-
-/* ==========================================================================
-   7. KEYFRAME ANIMATIONS
-   ========================================================================== */
-
-@keyframes omniPulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.45;
-    transform: scale(0.84);
-  }
-}
-
-@keyframes omniSheen {
-  0%,
-  72%,
-  100% {
-    left: -40%;
-  }
-  36% {
-    left: 130%;
-  }
-}
-
-@keyframes omniAlertBlink {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0.35;
-  }
-}
-
-@keyframes omniRotateCW {
+@keyframes omniSpin {
   to {
     transform: rotate(360deg);
   }
 }
 
-@keyframes omniRotateCCW {
-  to {
-    transform: rotate(-360deg);
-  }
+.omni-loader-pct {
+  position: absolute;
+  font-family: var(--omni-font-display);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--omni-cyan-bright);
 }
 
-@keyframes omniToastIn {
-  from {
-    opacity: 0;
-    transform: translateY(-12px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+.omni-loader-title {
+  font-family: var(--omni-font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #ffffff;
 }
 
-@keyframes omniToastOut {
-  from {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.96);
-  }
+.omni-loader-status {
+  font-family: var(--omni-font-tactical);
+  font-size: 11.5px;
+  color: var(--omni-text-secondary);
+  text-align: center;
 }
 
-/* ==========================================================================
-   8. RESPONSIVE BREAKPOINTS (4K UHD • LAPTOP • TABLET • ANDROID LANDSCAPE)
-   ========================================================================== */
+/* ============================================================================
+   5. RESPONSIVE & ANDROID MOBILE LANDSCAPE / PORTRAIT TUNING
+   ============================================================================ */
 
-/* 4K Ultra-HD Desktop Scaling */
-@media (min-width: 2200px) {
-  html {
-    font-size: 16.5px;
-  }
-  .omni-hub-grid {
-    grid-template-columns: 410px minmax(0, 1fr);
-    gap: 22px;
-  }
-  .omni-radar-shell {
-    width: 216px;
-    height: 216px;
-  }
-  .omni-vitals-stack {
-    width: 216px;
-  }
-}
-
-/* Medium Laptop / Tablet Landscape */
-@media (max-width: 1240px) {
-  .omni-worlds-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-  .omni-hub-grid {
-    grid-template-columns: 306px minmax(0, 1fr);
-  }
-}
-
-/* Tablet / Narrow Screens */
-@media (max-width: 920px) {
-  .omni-hub-grid {
-    grid-template-columns: 1fr;
-  }
-  .omni-controls-columns {
-    grid-template-columns: 1fr;
-  }
-  .omni-hud-topcenter {
-    max-width: calc(100vw - 320px);
-  }
-}
-
-/* Smartphone Portrait */
-@media (max-width: 640px) {
-  #omniverse-hub {
-    padding: calc(10px + var(--safe-top)) calc(12px + var(--safe-right))
-      calc(14px + var(--safe-bottom)) calc(12px + var(--safe-left));
-  }
-  .omni-worlds-grid {
-    grid-template-columns: 1fr;
-  }
-  .omni-apk-btn {
-    width: 100%;
-    justify-content: center;
-  }
-  .omni-radar-shell {
-    width: 128px;
-    height: 128px;
-  }
-  .omni-vitals-stack {
-    width: 128px;
-  }
-  .omni-hud-topcenter {
-    top: calc(56px + var(--safe-top));
-    max-width: 92vw;
-  }
-  .omni-telemetry-pill .omni-tel-extra {
-    display: none;
-  }
+/* Touch & Mobile: Anchor Speedometer at Bottom-Center (100% clear of joysticks & pedals) */
+@media (pointer: coarse), (max-width: 920px), (max-height: 540px) {
   #omniverse-speed-gauge {
-    right: calc(12px + var(--safe-right));
-    bottom: calc(170px + var(--safe-bottom));
-    width: 154px;
-    padding: 8px 10px;
-  }
-}
-
-/* Android Smartphone Landscape (max-height: 520px) — Zero Clipping / Zero Overflow */
-@media (max-height: 520px) {
-  #omniverse-hub {
-    padding: calc(8px + var(--safe-top)) calc(12px + var(--safe-right))
-      calc(10px + var(--safe-bottom)) calc(12px + var(--safe-left));
-    gap: 10px;
-    justify-content: flex-start;
-  }
-
-  .omni-hub-header {
-    padding: 8px 12px;
-    gap: 8px;
-  }
-
-  .omni-brand-emblem {
-    width: 34px;
-    height: 34px;
-  }
-
-  .omni-brand-subtitle {
-    display: none;
-  }
-
-  .omni-apk-btn {
-    padding: 7px 12px;
-    font-size: 0.82rem;
-  }
-
-  .omni-hub-grid {
-    grid-template-columns: 280px minmax(0, 1fr);
-    gap: 10px;
-  }
-
-  .omni-worlds-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 10px;
-  }
-
-  .omni-world-card {
-    padding: 11px 12px;
-    gap: 7px;
-  }
-
-  .omni-world-desc {
-    -webkit-line-clamp: 2;
-    font-size: 0.74rem;
-  }
-
-  .omni-settings-bar {
-    padding: 8px 12px;
-    gap: 10px;
-  }
-
-  /* Compact In-Game HUD for Mobile Landscape so Touch Joysticks Have Maximum Space */
-  .omni-hud-topleft {
-    top: calc(6px + var(--safe-top));
-    left: calc(10px + var(--safe-left));
-    gap: 5px;
-  }
-
-  .omni-radar-shell {
-    width: 114px;
-    height: 114px;
-  }
-
-  .omni-radar-coords {
-    font-size: 0.65rem;
-    padding: 1px 7px;
-  }
-
-  .omni-vitals-stack {
-    width: 118px;
-    gap: 4px;
-  }
-
-  .omni-vital-bar-row {
-    padding: 2px 6px;
-  }
-
-  .omni-credits-row {
-    padding: 3px 8px;
-    font-size: 0.72rem;
-  }
-
-  .omni-hud-topcenter {
-    top: calc(6px + var(--safe-top));
-    gap: 4px;
-    max-width: calc(100vw - 340px);
-  }
-
-  .omni-world-status-pill {
-    padding: 3px 10px;
-    font-size: 0.72rem;
-  }
-
-  #omniverse-world-toolbar {
-    padding: 4px 7px;
-    gap: 4px;
-  }
-
-  #omniverse-world-toolbar button {
-    padding: 3px 8px;
-    font-size: 0.72rem;
-  }
-
-  .omni-hud-topright {
-    top: calc(6px + var(--safe-top));
-    right: calc(10px + var(--safe-right));
-    gap: 4px;
-  }
-
-  .omni-telemetry-pill {
-    padding: 3px 9px;
-    font-size: 0.7rem;
-  }
-
-  .omni-hud-action-btn {
-    padding: 4px 9px;
-    font-size: 0.74rem;
-  }
-
-  #omniverse-speed-gauge {
-    right: calc(192px + var(--safe-right));
-    bottom: calc(8px + var(--safe-bottom));
-    width: 146px;
-    padding: 7px 9px;
-    gap: 3px;
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    bottom: max(6px, var(--safe-bottom));
+    width: 88px;
+    padding: 3px 5px 4px;
+    border-radius: 10px;
   }
 
   .omni-gauge-svg-wrap {
-    width: 118px;
-    height: 82px;
+    width: 74px;
+    height: 46px;
   }
 
   .omni-speed-value {
-    font-size: 1.26rem;
+    font-size: 14px;
+  }
+
+  .omni-speed-unit,
+  .omni-gear-badge {
+    font-size: 7px;
+  }
+
+  .omni-gauge-submetrics {
+    font-size: 8px;
+  }
+
+  /* Compact Top-Left Radar (64x64px) */
+  .omni-radar-shell {
+    width: 64px;
+    height: 64px;
+  }
+
+  .omni-topleft-side {
+    min-width: 64px;
+    max-width: 90px;
+  }
+
+  .omni-radar-coords {
+    font-size: 8.5px;
+    padding: 1px 4px;
+  }
+
+  .omni-tel-extra,
+  .omni-weather-tag,
+  .omni-status-hint {
+    display: none !important;
+  }
+
+  .omni-hud-topcenter {
+    max-width: calc(100vw - 295px);
+  }
+}
+
+/* Android Landscape Phones (e.g. 740x360, 844x390, 915x412) */
+@media (max-height: 520px) {
+  #omniverse-hub {
+    gap: 5px;
+    padding:
+      max(5px, var(--safe-top))
+      max(10px, var(--safe-right))
+      max(5px, var(--safe-bottom))
+      max(10px, var(--safe-left));
+  }
+
+  .omni-hub-header {
+    min-height: 32px;
+    padding: 3px 8px;
+  }
+
+  .omni-brand-emblem {
+    width: 20px;
+    height: 20px;
+  }
+
+  .omni-brand-title {
+    font-size: 11px;
+  }
+
+  .omni-engine-badge {
+    display: none;
+  }
+
+  .omni-hdr-btn,
+  .omni-resume-btn,
+  .omni-pwa-btn,
+  .omni-apk-btn {
+    height: 24px;
+    padding: 0 7px;
+    font-size: 10px;
+  }
+
+  .omni-hub-drawer {
+    top: calc(max(5px, var(--safe-top)) + 36px);
+    max-height: calc(100dvh - 44px);
+    padding: 8px 10px;
+  }
+
+  .omni-worlds-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .omni-world-card {
+    padding: 6px 8px;
+    gap: 3px;
+    border-radius: 8px;
+  }
+
+  .omni-world-emblem {
+    width: 22px;
+    height: 22px;
+  }
+
+  .omni-world-title {
+    font-size: 10.5px;
+  }
+
+  .omni-world-subtitle {
+    font-size: 9px;
+  }
+
+  .omni-world-desc {
+    font-size: 9.5px;
+    -webkit-line-clamp: 1;
+  }
+
+  .omni-world-features {
+    display: none;
   }
 
   .omni-radial-container {
-    width: 256px;
-    height: 256px;
+    width: min(182px, 68vh);
+    height: min(182px, 68vh);
+  }
+}
+
+/* Ultra-short Landscape Viewports (<= 380px height) */
+@media (max-height: 380px) {
+  .omni-world-desc {
+    display: none;
+  }
+}
+
+/* Portrait Tablets & Narrow Windows */
+@media (max-width: 720px) and (min-height: 521px) {
+  .omni-worlds-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .omni-radial-center {
-    width: 88px;
-    height: 88px;
+  .omni-controls-columns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Narrow Portrait Phones (<= 560px width) */
+@media (max-width: 560px) {
+  .omni-engine-badge,
+  .omni-btn-label-long {
+    display: none;
   }
 
-  #omniverse-toast-stack {
-    top: calc(54px + var(--safe-top));
+  .omni-hud-topcenter {
+    top: calc(max(6px, var(--safe-top)) + 68px);
+    max-width: calc(100vw - 16px);
+    width: calc(100vw - 16px);
+  }
+
+  .omni-tel-ping-wrap {
+    display: none;
+  }
+}
+
+@media (max-width: 440px) and (min-height: 521px) {
+  .omni-worlds-grid {
+    grid-template-columns: 1fr;
   }
 }

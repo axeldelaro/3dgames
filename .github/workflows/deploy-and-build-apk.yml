@@ -104,17 +104,25 @@ jobs:
             fi
           done
 
-      - name: Generate Release Signing Keystore
+      - name: Cache Release Signing Keystore across builds
+        uses: actions/cache@v4
+        with:
+          path: omniverse-release.keystore
+          key: omniverse-android-keystore-v1
+
+      - name: Generate Release Signing Keystore (if not cached)
         run: |
-          keytool -genkeypair -v \
-            -keystore omniverse-release.keystore \
-            -alias omniverse \
-            -keyalg RSA \
-            -keysize 2048 \
-            -validity 10000 \
-            -storepass omniverse3d \
-            -keypass omniverse3d \
-            -dname "CN=AxelDelaro, OU=OmniverseStudio, O=3DGames, L=Paris, S=IDF, C=FR"
+          if [ ! -f "omniverse-release.keystore" ]; then
+            keytool -genkeypair -v \
+              -keystore omniverse-release.keystore \
+              -alias omniverse \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -storepass omniverse3d \
+              -keypass omniverse3d \
+              -dname "CN=AxelDelaro, OU=OmniverseStudio, O=3DGames, L=Paris, S=IDF, C=FR"
+          fi
 
       - name: Build Release APK with Gradle & Sign as 3dgames.apk
         run: |

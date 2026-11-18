@@ -1,4 +1,4 @@
-const CACHE_NAME = 'omniverse-aaa-v1';
+const CACHE_NAME = 'omniverse-aaa-v2';
 const APP_SHELL = [
   './',
   './index.html',

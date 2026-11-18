@@ -1307,40 +1307,40 @@ export class ValheimWorld implements WorldInterface {
     const isNight = this.timeOfDay >= 19.0 || this.timeOfDay <= 5.3;
 
     const btnStyle = (active: boolean, danger = false) =>
-      `padding:6px 10px;border-radius:8px;border:1px solid ${
+      `border:1px solid ${
         active ? (danger ? '#ff6b6b' : '#66f2a5') : 'rgba(255,255,255,0.16)'
       };background:${
         active
           ? danger
             ? 'rgba(255,80,80,0.28)'
             : 'rgba(102,242,165,0.24)'
-          : 'rgba(10,18,26,0.72)'
-      };color:#f3fff8;font-size:12px;font-weight:600;cursor:pointer;backdrop-filter:blur(6px);`;
+          : 'rgba(10,18,26,0.76)'
+      };color:#f3fff8;cursor:pointer;`;
 
     const piecesHtml = this.buildMode
       ? BUILD_CATALOG.map(
           (b, idx) =>
             `<button data-build="${b.kind}" style="${btnStyle(
               !this.bulldozeMode && this.selectedBuildKind === b.kind
-            )}">[${idx + 1}] ${b.shortLabel}</button>`
+            )}">${idx + 1}.${b.shortLabel}</button>`
         ).join('') +
-        `<button data-act="rotate" style="${btnStyle(false)}">↻ [R]</button>` +
-        `<button data-act="bulldoze" style="${btnStyle(this.bulldozeMode, true)}">🗑️ Démolir [X]</button>`
-      : `<button data-tool="axe" style="${btnStyle(tool === 'axe')}">🪓 Hache [1]</button>` +
-        `<button data-tool="hammer" style="${btnStyle(tool === 'hammer')}">⛏️ Pioche [2]</button>` +
-        `<button data-tool="sword" style="${btnStyle(tool === 'sword')}">⚔️ Épée [3]</button>`;
+        `<button data-act="rotate" style="${btnStyle(false)}">↻</button>` +
+        `<button data-act="bulldoze" style="${btnStyle(this.bulldozeMode, true)}">🗑️</button>`
+      : `<button data-tool="axe" style="${btnStyle(tool === 'axe')}">🪓 Hache</button>` +
+        `<button data-tool="hammer" style="${btnStyle(tool === 'hammer')}">⛏️ Pioche</button>` +
+        `<button data-tool="sword" style="${btnStyle(tool === 'sword')}">⚔️ Épée</button>`;
 
     const html = `
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;pointer-events:auto;">
-        <span style="padding:5px 10px;border-radius:8px;background:rgba(8,16,22,0.82);border:1px solid rgba(102,242,165,0.35);color:#a9ffd1;font-size:12px;font-weight:700;">
-          🪵 ${this.woodCount} &nbsp; 🪨 ${this.stoneCount} &nbsp; ⛏️ ${this.ironCount}
+      <div>
+        <span style="padding:2px 6px;border-radius:5px;background:rgba(8,16,22,0.82);border:1px solid rgba(102,242,165,0.3);color:#a9ffd1;font-weight:700;">
+          🪵${this.woodCount} 🪨${this.stoneCount} ⛏️${this.ironCount}
         </span>
         <button data-act="toggle_build" style="${btnStyle(this.buildMode)}">
-          ${this.buildMode ? '🏗️ Construction ON [B]' : '🏗️ Construire [B]'}
+          ${this.buildMode ? '🏗️ Bâtir ON' : '🏗️ Bâtir'}
         </button>
         ${piecesHtml}
         <button data-act="cycle_time" style="${btnStyle(isNight)}">
-          ${isNight ? '☀️ Aube' : '🌙 Nuit Coop'}
+          ${isNight ? '☀️ Jour' : '🌙 Nuit'}
         </button>
       </div>
     `;

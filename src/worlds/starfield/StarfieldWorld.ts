@@ -1529,19 +1529,18 @@ export class StarfieldWorld implements WorldInterface {
     const navButtons = this.navTargets
       .map((t) => {
         const active = this.selectedTargetId === t.id;
-        const bg = active ? 'rgba(255,179,71,0.25)' : 'rgba(12,18,32,0.7)';
+        const bg = active ? 'rgba(255,179,71,0.25)' : 'rgba(12,18,32,0.75)';
         const border = active ? `1px solid ${t.color}` : '1px solid rgba(255,255,255,0.16)';
-        return `<button data-warp="${t.id}" style="padding:5px 9px;border-radius:7px;border:${border};background:${bg};color:#fff;font-size:12px;cursor:pointer;font-weight:600;">⚡ ${t.name}</button>`;
+        return `<button data-warp="${t.id}" style="border:${border};background:${bg};color:#fff;cursor:pointer;">⚡ ${t.name}</button>`;
       })
       .join('');
 
     const html = `
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 10px;border-radius:12px;background:rgba(8,12,24,0.8);backdrop-filter:blur(12px);border:1px solid rgba(255,179,71,0.34);color:#f8fafc;font-family:system-ui,sans-serif;font-size:12px;">
-        <button id="sf-spawn-ship" style="padding:5px 10px;border-radius:7px;border:1px solid #38f29d;background:rgba(56,242,157,0.18);color:#38f29d;cursor:pointer;font-weight:700;">🚀 Appeler Chasseur</button>
-        <button id="sf-toggle-cockpit" style="padding:5px 9px;border-radius:7px;border:1px solid #28e0ff;background:rgba(40,224,255,0.16);color:#28e0ff;cursor:pointer;font-weight:600;">🎛️ Cockpit 1P / 3P</button>
-        <span style="opacity:0.65;margin:0 2px;">Hyperdrive:</span>
+      <div>
+        <button id="sf-spawn-ship" style="border:1px solid #66f2a5;background:rgba(102,242,165,0.18);color:#66f2a5;cursor:pointer;">🚀 Vaisseau</button>
+        <button id="sf-toggle-cockpit" style="border:1px solid #38e2ff;background:rgba(56,226,255,0.16);color:#84f1ff;cursor:pointer;">🎛️ 1P/3P</button>
         ${navButtons}
-        <span id="sf-ore-counter" style="margin-left:6px;padding:4px 8px;border-radius:6px;background:rgba(56,189,248,0.16);color:#7dd3fc;font-weight:700;">💎 Minerai: ${this.quantumOre}</span>
+        <span id="sf-ore-counter" style="padding:2px 6px;border-radius:5px;background:rgba(56,189,248,0.16);color:#7dd3fc;font-weight:700;">💎 ${this.quantumOre}</span>
       </div>
     `;
 

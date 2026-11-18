@@ -1972,45 +1972,41 @@ export class MetropolisWorld implements WorldInterface {
   }
 
   private setupToolbarUI(): void {
-    const presetBtns = CITY_PRESETS.map((p) => {
+    const presetOptions = CITY_PRESETS.map((p) => {
       const isActive = this.currentCityName.toLowerCase().includes(p.name.toLowerCase());
-      const border = isActive ? '1px solid #28e0ff' : '1px solid rgba(255,255,255,0.16)';
-      const bg = isActive ? 'rgba(40,224,255,0.22)' : 'rgba(12,20,34,0.68)';
-      return `<button data-city="${p.id}" style="padding:5px 9px;border-radius:7px;border:${border};background:${bg};color:#fff;font-size:12px;cursor:pointer;font-weight:600;">${p.name}</button>`;
+      return `<option value="${p.id}" ${isActive ? 'selected' : ''}>🌆 ${p.name}</option>`;
     }).join('');
 
     const curHour = this.ctx.sky.getTimeOfDay();
-    const aptLabel = this.ownsPenthouse ? '🏢 Héliport Penthouse' : `🏢 Acheter Penthouse ($${PENTHOUSE_PRICE})`;
+    const aptLabel = this.ownsPenthouse ? '🏢 Penthouse' : `🏢 Apt $${PENTHOUSE_PRICE}`;
+    const pillStyle =
+      'border:1px solid rgba(255,255,255,0.18);background:rgba(12,22,38,0.78);color:#eaf6ff;cursor:pointer;';
 
     const html = `
-      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 10px;border-radius:12px;background:rgba(8,14,26,0.78);backdrop-filter:blur(12px);border:1px solid rgba(40,224,255,0.28);color:#eaf6ff;font-family:system-ui,sans-serif;font-size:12px;">
-        ${presetBtns}
-        <div style="display:flex;align-items:center;gap:4px;margin-left:4px;">
-          <input id="metro-nominatim-input" type="text" placeholder="Ville mondiale (Nominatim)..." style="width:155px;padding:5px 8px;border-radius:7px;border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.45);color:#fff;font-size:12px;outline:none;" />
-          <button id="metro-nominatim-go" style="padding:5px 8px;border-radius:7px;border:1px solid #28e0ff;background:rgba(40,224,255,0.2);color:#28e0ff;cursor:pointer;font-weight:700;">Go</button>
-        </div>
-        <button id="metro-real-gps" style="padding:5px 9px;border-radius:7px;border:1px solid #38f29d;background:rgba(56,242,157,0.18);color:#38f29d;cursor:pointer;font-weight:700;">📍 GPS Réel</button>
-        <label style="display:flex;align-items:center;gap:4px;margin-left:4px;white-space:nowrap;">
-          ☀️/🌙
-          <input id="metro-tod-slider" type="range" min="0" max="24" step="0.25" value="${curHour.toFixed(2)}" style="width:72px;accent-color:#28e0ff;cursor:pointer;" />
+      <div>
+        <select id="metro-city-select" title="Choisir une métropole réelle">${presetOptions}</select>
+        <input id="metro-nominatim-input" type="text" placeholder="Ville OSM..." style="border:1px solid rgba(255,255,255,0.2);background:rgba(0,0,0,0.45);color:#fff;outline:none;" />
+        <button id="metro-nominatim-go" style="border:1px solid #38e2ff;background:rgba(56,226,255,0.2);color:#84f1ff;cursor:pointer;">🔍</button>
+        <button id="metro-real-gps" style="border:1px solid #66f2a5;background:rgba(102,242,165,0.18);color:#66f2a5;cursor:pointer;">📍 GPS</button>
+        <label style="display:inline-flex;align-items:center;gap:3px;">
+          ☀️<input id="metro-tod-slider" type="range" min="0" max="24" step="0.25" value="${curHour.toFixed(2)}" style="accent-color:#38e2ff;cursor:pointer;" />
         </label>
-        <button data-spawn="car" style="padding:5px 8px;border-radius:7px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;cursor:pointer;">🏎️ Supercar</button>
-        <button data-spawn="moto" style="padding:5px 8px;border-radius:7px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;cursor:pointer;">🏍️ Moto</button>
-        <button data-spawn="heli" style="padding:5px 8px;border-radius:7px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.08);color:#fff;cursor:pointer;">🚁 Hélico</button>
-        <button id="metro-buy-apt" style="padding:5px 9px;border-radius:7px;border:1px solid #ffc857;background:rgba(255,200,87,0.18);color:#ffc857;cursor:pointer;font-weight:600;">${aptLabel}</button>
-        <button id="metro-new-mission" style="padding:5px 9px;border-radius:7px;border:1px solid #ff7b54;background:rgba(255,123,84,0.2);color:#ffb399;cursor:pointer;font-weight:600;">📦 Livraison</button>
+        <button data-spawn="car" style="${pillStyle}" title="Appeler Supercar">🏎️ Auto</button>
+        <button data-spawn="moto" style="${pillStyle}" title="Appeler Moto">🏍️ Moto</button>
+        <button data-spawn="heli" style="${pillStyle}" title="Appeler Hélicoptère">🚁 Héli</button>
+        <button id="metro-buy-apt" style="border:1px solid #ffb347;background:rgba(255,179,71,0.18);color:#ffd166;cursor:pointer;">${aptLabel}</button>
+        <button id="metro-new-mission" style="border:1px solid #ff7b54;background:rgba(255,123,84,0.2);color:#ffb399;cursor:pointer;">📦 Mission</button>
       </div>
     `;
 
     this.ctx.ui.setWorldToolbarHTML(html, (container) => {
-      container.querySelectorAll<HTMLButtonElement>('button[data-city]').forEach((btn) => {
-        btn.addEventListener('click', () => {
-          this.ctx.audio.playUIClick();
-          const preset = CITY_PRESETS.find((p) => p.id === btn.dataset.city);
-          if (preset) {
-            void this.loadCityAtCoordinates(preset.name, preset.lat, preset.lon, true);
-          }
-        });
+      const citySelect = container.querySelector<HTMLSelectElement>('#metro-city-select');
+      citySelect?.addEventListener('change', () => {
+        this.ctx.audio.playUIClick();
+        const preset = CITY_PRESETS.find((p) => p.id === citySelect.value);
+        if (preset) {
+          void this.loadCityAtCoordinates(preset.name, preset.lat, preset.lon, true);
+        }
       });
 
       const searchInput = container.querySelector<HTMLInputElement>('#metro-nominatim-input');
